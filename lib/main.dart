@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'helpers.dart';
 import 'map.dart';
@@ -118,7 +117,6 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('GPS 001'),
-
             actions: [
               PopupMenuButton<String>(          
                 icon: const Icon(Icons.more_vert),
@@ -152,15 +150,14 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
           ElevatedButton(
           onPressed: () async { 
             provider.updateLoc1(TheLocation.lat, TheLocation.lng, TheLocation.dtime);
-            provider.updateData01("$TheLocation.lat","$TheLocation.lat");
+            provider.updateData01("$TheLocation.lat","$TheLocation.lat");            
           },
           child: const Text('Refresh'),
           ), 
              SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.7,
-                child: const MyMap()),
-          
+                child: const MyMap()),  
         ],
       ),
     );
