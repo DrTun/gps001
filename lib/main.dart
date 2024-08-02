@@ -1,13 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:gps001/helpers.dart';
-import 'package:gps001/map.dart';
+import 'helpers.dart';
+import 'map.dart';
+import 'mynotifier.dart';
 import 'package:location/location.dart';
 import 'package:logger/web.dart';
+import 'package:provider/provider.dart';
 
 void main() async{
-  runApp(const MyApp());
+  runApp(
+          MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => MyNotifier()) // Provider
+      ],
+    
+    child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -28,6 +36,8 @@ class MyStatefulWidget extends StatefulWidget {
 
 class MyStatefulWidgetState extends State<MyStatefulWidget> {
   final logger=Logger();
+  late MyNotifier provider ;  // Provider Declaration and init
+  
   // GPS Declare >>>>
   final Location location = Location();
   late StreamSubscription<LocationData> locationSubscription;
@@ -35,6 +45,8 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   void initState() {
     super.initState(); 
+    // Provider init
+    provider = Provider.of<MyNotifier>(context,listen: false);
     // GPS Init >>>>
     // Permission and get current location
    chkGPSPermission().then((value) => () {
@@ -50,8 +62,11 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
     locationSubscription = location.onLocationChanged.listen((LocationData currentLocation) {
       GlobalData.counter++;
       var lat= currentLocation.latitude;
-      var lon= currentLocation.longitude; 
-      MyHelpers.showIt("$lon x $lat ",label: "(${GlobalData.counter}) ",sec: 2); 
+      var lng= currentLocation.longitude; 
+      TheLocation.set(currentLocation.latitude!, currentLocation.longitude!, DateTime.now());
+      provider.updateLoc1(TheLocation.lat, TheLocation.lng, TheLocation.dtime);
+      provider.updateData01("$lat","$lat");
+      MyHelpers.showIt("$lat x $lng ",label: "(${GlobalData.counter}) ",sec: 2); 
     });
     locationSubscription.pause();
     // GPS Init -------------------
@@ -113,9 +128,11 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
                   else if (value =="CURRENT"){ 
                     var locationData = await getCurrentLocation(location); 
                     if (locationData != null) {
-                      var lon= locationData.longitude;
+                      var lng= locationData.longitude;
                       var lat= locationData.latitude;
-                      MyHelpers.showIt("$lon x $lat",label: "Show Location: ",sec: 5);
+                      provider.updateLoc1(TheLocation.lat, TheLocation.lng, TheLocation.dtime);
+                      provider.updateData01("$lat","$lat");
+                      MyHelpers.showIt("$lat x $lng",label: "Show Location: ",sec: 5);
                     } else {
                     logger.i("Permission Denied");
                     }  
@@ -133,7 +150,10 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
         children: [
           const Text(" "),
           ElevatedButton(
-          onPressed: () async { },
+          onPressed: () async { 
+            provider.updateLoc1(TheLocation.lat, TheLocation.lng, TheLocation.dtime);
+            provider.updateData01("$TheLocation.lat","$TheLocation.lat");
+          },
           child: const Text('Refresh'),
           ), 
              SizedBox(
@@ -151,12 +171,12 @@ class GlobalData{
 }
 class TheLocation{
   static double lat=0;
-  static double lon=0; 
+  static double lng=0; 
   static DateTime dtime= DateTime.now();
-  static void set(double lat, double lon, DateTime dt){
-    if (lat!=0 && lon!=0){
+  static void set(double lat, double lng, DateTime dt){
+    if (lat!=0 && lng!=0){
     TheLocation.lat=lat;
-    TheLocation.lon=lon;
+    TheLocation.lng=lng;
     TheLocation.dtime=dt;
     }
   }
