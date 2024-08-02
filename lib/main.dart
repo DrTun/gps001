@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
 import 'helpers.dart';
 import 'map.dart';
 import 'mynotifier.dart';
@@ -130,6 +131,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
                       var lat= locationData.latitude;
                       provider.updateLoc1(TheLocation.lat, TheLocation.lng, TheLocation.dtime);
                       provider.updateData01("$lat","$lat");
+                      provider.mapController.move(LatLng(provider.loc01.lat, provider.loc01.lng),13); 
                       MyHelpers.showIt("$lat x $lng",label: "Show Location: ",sec: 5);
                     } else {
                     logger.i("Permission Denied");
@@ -150,7 +152,8 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
           ElevatedButton(
           onPressed: () async { 
             provider.updateLoc1(TheLocation.lat, TheLocation.lng, TheLocation.dtime);
-            provider.updateData01("$TheLocation.lat","$TheLocation.lat");            
+            provider.updateData01("$TheLocation.lat","$TheLocation.lat");  
+            provider.mapController.move(LatLng(provider.loc01.lat, provider.loc01.lng),13);         
           },
           child: const Text('Refresh'),
           ), 

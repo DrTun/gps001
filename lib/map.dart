@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_map/flutter_map.dart';
+import 'package:gps001/helpers.dart';
 import 'package:gps001/mynotifier.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +25,9 @@ class MyMapState extends State<MyMap> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+    provider = Provider.of<MyNotifier>(context,listen: false);
+    });
   }
 @override
 Widget build(BuildContext context) {
@@ -31,6 +35,7 @@ Widget build(BuildContext context) {
       builder: (context, provider , child) {
       //mapctrl.move(LatLng(provider.loc01.lat, provider.loc01.lng),13);
 
+      logger.i("BULD CONTEXT: ${provider.loc01.lat} x ${provider.loc01.lng}");
       return Scaffold(
           body: Stack(
             children: [
@@ -38,9 +43,9 @@ Widget build(BuildContext context) {
             FlutterMap(
               //initialCenter: LatLng(provider.loc01.lat, provider.loc01.lon),
               //initialCenter: LatLng(51.509364, -0.128928),
-              mapController: mapctrl,
-              options:  MapOptions(
-                initialCenter: LatLng(provider.loc01.lat, provider.loc01.lng),
+              mapController: provider.mapController,
+              options:  const MapOptions(
+                initialCenter: LatLng(16.87142019486324, 96.12368485665527),
                 initialZoom: 13,
               ),
               children: [
