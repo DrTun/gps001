@@ -32,7 +32,7 @@ class Data01 {
 }
 class Loc01 {
   final double  lat;
-  final double lng;
+  final double lng; 
   final DateTime dt;
   Loc01(this.lat, this.lng, this.dt);
 } 

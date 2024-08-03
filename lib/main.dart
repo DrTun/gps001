@@ -37,6 +37,9 @@ class MyStatefulWidget extends StatefulWidget {
 class MyStatefulWidgetState extends State<MyStatefulWidget> {
   final logger=Logger();
   late MyNotifier provider ;  // Provider Declaration and init
+  String lblCenterMap="";
+  String lblShowLatLng="";
+  String lblTracking="";
   
   // GPS Declare >>>>
   final Location location = Location();
@@ -45,6 +48,22 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   void initState() {
     super.initState(); 
+    
+    if (TheLocation.centerMap){
+      lblCenterMap="Center Map ON";;
+    } else{
+      lblCenterMap="Center Map OFF";;
+    }    
+    if (TheLocation.showLatLng){
+      lblShowLatLng="Lat & Lng ON";;
+    } else{
+      lblShowLatLng="Lat & Lng OFF";
+    }    
+    if (TheLocation.tracking){
+      lblTracking="Tracking ON";;
+    } else{
+      lblTracking="Traking OFF";
+    } 
     // Provider init
     provider = Provider.of<MyNotifier>(context,listen: false);
     // GPS Init >>>>
@@ -58,7 +77,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
       }
     });
     // Listener 
-    location.changeSettings(accuracy: LocationAccuracy.high, interval: 6000);
+    location.changeSettings(accuracy: LocationAccuracy.high, interval: 10000);
     locationSubscription = location.onLocationChanged.listen((LocationData currentLocation) {
       GlobalData.counter++;
       var lat= currentLocation.latitude;
@@ -66,15 +85,20 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
       TheLocation.set(currentLocation.latitude!, currentLocation.longitude!, DateTime.now());
       provider.updateLoc1(TheLocation.lat, TheLocation.lng, TheLocation.dtime);
       provider.updateData01("$lat","$lat");
-      provider.mapController.move(LatLng(provider.loc01.lat, provider.loc01.lng),13.0); // Provider Update
-      MyHelpers.showIt("$lat x $lng ",label: "(${GlobalData.counter}) ",sec: 2); 
+      if (TheLocation.centerMap){
+        provider.mapController.move(LatLng(provider.loc01.lat, provider.loc01.lng),TheLocation.zoom); // Provider Update
+      }
+      if (TheLocation.showLatLng){
+        MyHelpers.showIt("$lat x $lng ",label: "(${GlobalData.counter}) ",sec: 2); 
+      }
     });
     locationSubscription.pause();
     // GPS Init -------------------
+
   } 
   Future<bool> chkGPSPermission() async{
     bool serviceEnabled;
-    PermissionStatus permissionGranted;
+    PermissionStatus permissionGranted; 
     try { 
         serviceEnabled = await location.serviceEnabled();
         if (!serviceEnabled) {
@@ -120,8 +144,13 @@ void moveHere(controller) async {
       var lat= locationData.latitude;
       provider.updateLoc1(TheLocation.lat, TheLocation.lng, TheLocation.dtime);
       provider.updateData01("$lat","$lat");
+      if (TheLocation.centerMap){
       controller.move(LatLng(provider.loc01.lat, provider.loc01.lng),13.0); 
-      MyHelpers.showIt("$lat x $lng",label: "Current Location",sec: 5);
+      }      
+      if (TheLocation.showLatLng){
+          MyHelpers.showIt("$lat x $lng",label: "Current Location",sec: 5);
+
+      }
     } else {
     logger.i("Permission Denied");
     }    
@@ -137,14 +166,42 @@ void moveHere(controller) async {
               PopupMenuButton<String>(          
                 icon: const Icon(Icons.more_vert),
                 onSelected: (value) async { 
-                  if (value == 'START') {GlobalData.counter=0;locationSubscription.resume(); } 
-                  else if (value == 'STOP') { GlobalData.counter=0;locationSubscription.pause(); } // Provider Update
-                  else if (value =="CURRENT"){ moveHere(provider.mapController); }
+                  if (value == 'START') {
+                    if(TheLocation.tracking) {
+                      TheLocation.tracking=false;
+                      GlobalData.counter=0;
+                      locationSubscription.resume(); 
+                      setState(() {lblTracking="Tracking ON";});
+                    } else {
+                      TheLocation.tracking=true;
+                      GlobalData.counter=0;
+                      locationSubscription.pause(); 
+                      setState(() {lblTracking="Tracking OFF";});
+                    }
+                  } else if (value =="CURRENT"){ moveHere(provider.mapController); 
+                  } else if (value =="CENTERMAP"){ 
+                      if (TheLocation.centerMap){
+                        TheLocation.centerMap=false;
+                        setState(() {lblCenterMap="Center Map OFF";});
+                      } else{
+                        TheLocation.centerMap=true;
+                        setState(() {lblCenterMap="Center Map ON";});
+                      }
+                  }else if (value =="SHOWLL"){ 
+                    if(TheLocation.showLatLng) {
+                      TheLocation.showLatLng=false;
+                      setState(() {lblShowLatLng="Lat & Lng OFF";});
+                    } else {
+                      TheLocation.showLatLng=true;
+                      setState(() {lblShowLatLng="Lat & Lng ON";});
+                    } 
+                  }
                 },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                  const PopupMenuItem<String>( value: 'START',  child: Text('Start'),  ),
-                  const PopupMenuItem<String>( value: 'STOP',  child: Text('Stop'), ),
-                  const PopupMenuItem<String>( value: 'CURRENT',  child: Text('Current'), ),
+                  PopupMenuItem<String>( value: 'CENTERMAP', child: Text(lblCenterMap),  ),
+                  PopupMenuItem<String>( value: 'SHOWLL',  child: Text(lblShowLatLng),  ),
+                  PopupMenuItem<String>( value: 'START',  child: Text(lblTracking),  ),
+                  const PopupMenuItem<String>( value: 'CURRENT',  child: Text('My Location'), ),
                 ],
               ),
             ],
@@ -184,6 +241,10 @@ class GlobalData{
 class TheLocation{
   static double lat=0;
   static double lng=0; 
+  static bool showLatLng=true;
+  static bool centerMap=true;
+  static bool tracking=true;
+  static double zoom=13;
   static DateTime dtime= DateTime.now();
   static void set(double lat, double lng, DateTime dt){
     if (lat!=0 && lng!=0){
