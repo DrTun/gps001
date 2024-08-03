@@ -35,7 +35,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
   final logger=Logger();
   late LocationNotifier locationNotifierProvider ;  // Provider Declaration and init
   String lblShowLatLng=GeoData.showLatLng?"Hide Lat & Lng":"Show Lat & Lng On";
-  String lblLocationChanges=GeoData.listenChanges?"Hide your location":"Show your location";
+  String lblLocationChanges=GeoData.listenChanges?"Hide location marker":"Show location marker";
   
   // GPS Declare >>>>
   final Location location = Location();
@@ -84,13 +84,13 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
                       GeoData.listenChanges=false;
                       GeoData.counter=0;
                       locationSubscription.resume(); 
-                      setState(() {lblLocationChanges="Hide your location";});
+                      setState(() {lblLocationChanges="Hide location marker";});
                     } else {
                       GeoData.listenChanges=true;
                       GeoData.centerMap=true;
                       GeoData.counter=0;
                       locationSubscription.pause(); 
-                      setState(() {lblLocationChanges="Show your location";});
+                      setState(() {lblLocationChanges="Show location marker";});
                     }
                   } else if (value =="CURRENT"){ moveHere(locationNotifierProvider.mapController); 
                   } else if (value =="CENTERMAP"){  
