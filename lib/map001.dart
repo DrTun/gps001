@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_map/flutter_map.dart';
-import 'package:gps001/helpers.dart';
-import 'package:gps001/main.dart'; 
-import 'package:gps001/mynotifier.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart'; 
-
-//class MyMap extends StatelessWidget {
-//  const MyMap({super.key});
-
-class MyMap extends StatefulWidget {
-  const MyMap({super.key});
+import 'helpers.dart'; 
+import 'geodata.dart';
+//  -------------------------------------    Map001 (Property of Nirvasoft.com)
+class Map001 extends StatefulWidget {
+  const Map001({super.key});
 
   @override
-  MyMapState createState() => MyMapState();
+  Map001State createState() => Map001State();
 }
 
-class MyMapState extends State<MyMap> {
-  late MyNotifier provider ;
+class Map001State extends State<Map001> {
+  late LocationNotifier provider ;
   final List<Marker> markers = [];
   //late MapController mapctrl; 
   final  mapctrl = MapController();
@@ -28,12 +23,12 @@ class MyMapState extends State<MyMap> {
   void initState() {
     super.initState();
     setState(() {
-    provider = Provider.of<MyNotifier>(context,listen: false);
+    provider = Provider.of<LocationNotifier>(context,listen: false);
     });
   }
 @override
 Widget build(BuildContext context) {
-    return Consumer<MyNotifier>(
+    return Consumer<LocationNotifier>(
       builder: (context, provider , child) {
       const double lat =51.509364; 
       const double lng =-0.128928;
@@ -41,18 +36,13 @@ Widget build(BuildContext context) {
       logger.i("BULD CONTEXT: ${provider.loc01.lat} x ${provider.loc01.lng}");
       return Scaffold(
           body: Stack(
-            children: [
-                    
+            children: [ 
             FlutterMap(
-              //initialCenter: LatLng(provider.loc01.lat, provider.loc01.lon),
-              //initialCenter: LatLng(51.509364, -0.128928),
               mapController: provider.mapController,
               options:   MapOptions(
                 initialCenter: const LatLng(lat, lng), //london
-                initialZoom: TheLocation.zoom,
-                onPositionChanged: (position, hasGesture) {
-                    TheLocation.centerMap=false;
-                },
+                initialZoom: GeoData.zoom,
+                onPositionChanged: (position, hasGesture) {GeoData.centerMap=false;},
               ),
               children: [
                 TileLayer(
@@ -75,18 +65,14 @@ Widget build(BuildContext context) {
         );
   });
 }
-  List<Marker> getmarkers(MyNotifier model) {
-    //point: LatLng(TheLocation.lat, TheLocation.lng),
-    //point: LatLng(model.loc01.lat, model.loc01.lng),
+  List<Marker> getmarkers(LocationNotifier model) { 
       markers.clear();
       markers.add(Marker(
         point: LatLng(model.loc01.lat, model.loc01.lng),
         width: 25,
         height: 25,
         alignment: Alignment.center,
-        child: Image.asset('assets/images/circle_green.png',
-          scale: 1.0,
-        ),
+        child: Image.asset('assets/images/circle_green.png',scale: 1.0,),
       ));
     return markers;
   }
