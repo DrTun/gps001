@@ -19,6 +19,7 @@ class MyMap extends StatefulWidget {
 
 class MyMapState extends State<MyMap> {
   late MyNotifier provider ;
+  final List<Marker> markers = [];
   //late MapController mapctrl; 
   final  mapctrl = MapController();
 
@@ -33,7 +34,8 @@ class MyMapState extends State<MyMap> {
 Widget build(BuildContext context) {
     return Consumer<MyNotifier>(
       builder: (context, provider , child) {
-      //mapctrl.move(LatLng(provider.loc01.lat, provider.loc01.lng),13);
+      const double lat =51.509364; 
+      const double lng =-0.128928;
 
       logger.i("BULD CONTEXT: ${provider.loc01.lat} x ${provider.loc01.lng}");
       return Scaffold(
@@ -45,29 +47,20 @@ Widget build(BuildContext context) {
               //initialCenter: LatLng(51.509364, -0.128928),
               mapController: provider.mapController,
               options:  const MapOptions(
-                initialCenter: LatLng(16.87142019486324, 96.12368485665527),
+                initialCenter: LatLng(lat, lng), //london
                 initialZoom: 13,
               ),
               children: [
-                MarkerLayer(
-                  markers: [
-                    Marker(
-                      point: LatLng(provider.loc01.lat, provider.loc01.lng),
-                      width: 80,
-                      height: 80,
-                      child: const FlutterLogo(),
-                    ),
-                  ],
-                ),
+                MarkerLayer(rotate: true, markers: getmarkers(provider)),
                 TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.example.app',
+                  userAgentPackageName: 'com.nirvasoft.gps001',
                 ),
                 RichAttributionWidget(
                   attributions: [
                     TextSourceAttribution(
-                      '${provider.loc01.lat} ${provider.loc01.lng}',
-                      onTap: () => launchUrl(Uri.parse('https://openstreetmap.org/copyright')),
+                      ' ${provider.loc01.lat} ${provider.loc01.lng}',
+                      onTap: () => launchUrl(Uri.parse('https://www.nirvasoft.com')),
                     ),
                   ],
                 ),
@@ -80,4 +73,74 @@ Widget build(BuildContext context) {
         );
   });
 }
+  List<Marker> getmarkers(MyNotifier model) {
+    markers.clear();
+      markers.add(Marker(
+        point: LatLng(model.loc01.lat, model.loc01.lng),
+        width: 40,
+        height: 64,
+        alignment: Alignment.center,
+        child: Image.asset('assets/images/circle_green.png',
+          scale: .3,
+        ),
+      ));
+
+    //try {
+    //   markers.clear();
+    //   markers.add(Marker(
+    //     point: model.locationPosition!,
+    //     width: 40,
+    //     height: 64,
+    //     alignment: Alignment.center,
+    //     child: Image.asset(
+    //       model.isOnlineAvailable
+    //           ? 'assets/images/circle_green.png'
+    //           : 'assets/images/circle_grey.png',
+    //       scale: .3,
+    //     ),
+    //   ));
+    //   if (myWidget.destinationController.text != "") {
+    //     previousDestinationMarker = Marker(
+    //         width: 200.0,
+    //         height: 60.0,
+    //         point: LatLng(double.parse(myWidget.destinationLat),
+    //             double.parse(myWidget.destinationLng)),
+    //         child: Column(children: [
+    //           Container(
+    //             decoration: BoxDecoration(
+    //               color: Colors.white,
+    //               borderRadius: BorderRadius.circular(5.0),
+    //             ),
+    //             child: const Padding(
+    //               padding: EdgeInsets.all(5.0),
+    //               child: Text(
+    //                 'To (သို့)',
+    //                 style: TextStyle(fontSize: 12.0),
+    //               ),
+    //             ),
+    //           ),
+    //           const SizedBox(
+    //             height: 2,
+    //           ),
+    //           Image.asset(
+    //             'assets/images/to.png',
+    //             scale: .3,
+    //             width: 25.0,
+    //             height: 25.0,
+    //           )
+    //         ]));
+    //     markers.add(previousDestinationMarker!);
+    //   } else if (previousDestinationMarker != null &&
+    //       markers.contains(previousDestinationMarker)) {
+    //     markers.remove(previousDestinationMarker);
+    //   } else if (previousDestinationMarker != null &&
+    //       markers.contains(previousDestinationMarker) &&
+    //       myWidget.destinationController.text == "") {
+    //     markers.remove(previousDestinationMarker);
+    //   }
+    // } catch (error) {}
+
+    return markers;
+  }
+
 }

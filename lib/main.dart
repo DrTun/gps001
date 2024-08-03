@@ -58,7 +58,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
       }
     });
     // Listener 
-    location.changeSettings(accuracy: LocationAccuracy.high, interval: 3000);
+    location.changeSettings(accuracy: LocationAccuracy.high, interval: 6000);
     locationSubscription = location.onLocationChanged.listen((LocationData currentLocation) {
       GlobalData.counter++;
       var lat= currentLocation.latitude;
@@ -66,6 +66,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
       TheLocation.set(currentLocation.latitude!, currentLocation.longitude!, DateTime.now());
       provider.updateLoc1(TheLocation.lat, TheLocation.lng, TheLocation.dtime);
       provider.updateData01("$lat","$lat");
+      provider.mapController.move(LatLng(provider.loc01.lat, provider.loc01.lng),13.0); // Provider Update
       MyHelpers.showIt("$lat x $lng ",label: "(${GlobalData.counter}) ",sec: 2); 
     });
     locationSubscription.pause();
@@ -112,6 +113,20 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
         return null;
       } 
   }
+void moveHere(controller) async {
+    var locationData = await getCurrentLocation(location); 
+    if (locationData != null) {
+      var lng= locationData.longitude;
+      var lat= locationData.latitude;
+      provider.updateLoc1(TheLocation.lat, TheLocation.lng, TheLocation.dtime);
+      provider.updateData01("$lat","$lat");
+      controller.move(LatLng(provider.loc01.lat, provider.loc01.lng),13.0); 
+      MyHelpers.showIt("$lat x $lng",label: "Current Location",sec: 5);
+    } else {
+    logger.i("Permission Denied");
+    }    
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -124,19 +139,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
                 onSelected: (value) async { 
                   if (value == 'START') {GlobalData.counter=0;locationSubscription.resume(); } 
                   else if (value == 'STOP') { GlobalData.counter=0;locationSubscription.pause(); } // Provider Update
-                  else if (value =="CURRENT"){ 
-                    var locationData = await getCurrentLocation(location); 
-                    if (locationData != null) {
-                      var lng= locationData.longitude;
-                      var lat= locationData.latitude;
-                      provider.updateLoc1(TheLocation.lat, TheLocation.lng, TheLocation.dtime);
-                      provider.updateData01("$lat","$lat");
-                      provider.mapController.move(LatLng(provider.loc01.lat, provider.loc01.lng),13); 
-                      MyHelpers.showIt("$lat x $lng",label: "Show Location: ",sec: 5);
-                    } else {
-                    logger.i("Permission Denied");
-                    }  
-                  }
+                  else if (value =="CURRENT"){ moveHere(provider.mapController); }
                 },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                   const PopupMenuItem<String>( value: 'START',  child: Text('Start'),  ),
@@ -150,12 +153,19 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
         children: [
           const Text(" "),
           ElevatedButton(
-          onPressed: () async { 
-            provider.updateLoc1(TheLocation.lat, TheLocation.lng, TheLocation.dtime);
-            provider.updateData01("$TheLocation.lat","$TheLocation.lat");  
-            provider.mapController.move(LatLng(provider.loc01.lat, provider.loc01.lng),13);         
+          onPressed: () async { moveHere(provider.mapController);
+          // await provider.mapController.
+          
+          // addMarker(marker,
+          // markerIcon: const MarkerIcon(
+          //   icon: Icon(
+          //     Icons.location_pin,
+          //     color: Colors.blue,
+          //     size: 48,
+          //   ),
+          // ));
           },
-          child: const Text('Refresh'),
+          child: const Text('Current Location'),
           ), 
              SizedBox(
                 width: MediaQuery.of(context).size.width,
@@ -166,6 +176,8 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
     );
   }
 }
+
+
 class GlobalData{
   static int counter=0;
 }
