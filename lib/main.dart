@@ -45,34 +45,38 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   void initState() {
     super.initState();    
-    // GPS Init >>>> 
-    locationNotifierProvider = Provider.of<LocationNotifier>(context,listen: false);
-    GeoData.chkPermissions(location).then((permits) => () {
-      if (permits==false) {logger.i("Permission Denied");}
-      else {   
-        location.enableBackgroundMode(enable: true);
-      }
-    });
-    location.changeSettings(accuracy: LocationAccuracy.high, interval: GeoData.interval, distanceFilter: GeoData.distance);
-    locationSubscription = location.onLocationChanged.listen((LocationData currentLocation) {repeat(currentLocation);});
-    if (GeoData.listenChanges==false) locationSubscription.pause();
-    // GPS Init -------------------
+    initGeoData();
+  }
+  Future<void> initGeoData() async {
+    try {
+      locationNotifierProvider = Provider.of<LocationNotifier>(context,listen: false);
+      if (await GeoData.chkPermissions(location)){
+        await location.enableBackgroundMode(enable: true);
+        await location.changeSettings(accuracy: LocationAccuracy.high, interval: GeoData.interval, distanceFilter: GeoData.distance);
+        locationSubscription = location.onLocationChanged.listen((LocationData currentLocation) {repeat(currentLocation);});
+        if (GeoData.listenChanges==false) locationSubscription.pause();
+      } else {   
+        logger.i("Permission Denied");
+      } 
+    } catch (e) {
+      logger.i("Error: $e");
+    }
   }
   void repeat(LocationData currentLocation){
       GeoData.counter++;
-      var lat= currentLocation.latitude;
-      var lng= currentLocation.longitude; 
       GeoData.setLocation(currentLocation.latitude!, currentLocation.longitude!, DateTime.now());
-      locationNotifierProvider.updateLoc1(GeoData.lat, GeoData.lng, GeoData.dtime); 
+      setState(() {
+        locationNotifierProvider.updateLoc1(GeoData.lat, GeoData.lng, GeoData.dtime); 
+      });
       if (GeoData.centerMap){locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom);}
-      if (GeoData.showLatLng){MyHelpers.showIt("$lat x $lng ",label: "(${GeoData.counter}) ",sec: 1); }
+      if (GeoData.showLatLng){logger.i("(${GeoData.counter}) ${currentLocation.latitude} x ${currentLocation.longitude}");}
   }
   void moveHere() async {
       var locationData = await GeoData.getCurrentLocation(location); 
       if (locationData != null) {
         locationNotifierProvider.updateLoc1(GeoData.lat, GeoData.lng, GeoData.dtime); 
         locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom); 
-        if (GeoData.showLatLng){ MyHelpers.showIt("$locationData.latitude x $locationData.longitude \n\n\n",label: "Current Location",sec: 3,bcolor: Colors.orange);}
+        MyHelpers.showIt("\n${locationNotifierProvider.loc01.lat}\n${locationNotifierProvider.loc01.lng}",label: "You are here",sec: 4,bcolor: Colors.orange);
       } else { logger.i("Permission Denied"); }    
   }
   @override
@@ -97,21 +101,11 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
                       locationSubscription.pause(); 
                       setState(() {lblLocationChanges="Resume Location Service";});
                     }
-                  }else if (value =="SHOWLL"){ 
-                    if(GeoData.showLatLng) {
-                      GeoData.showLatLng=false;
-                      setState(() {lblShowLatLng="Show Lat & Lng";});
-                    } else {
-                      GeoData.showLatLng=true;
-                      setState(() {lblShowLatLng="Hide Lat & Lng";});
-                    } 
                   } else if (value =="CURRENT"){ moveHere(); 
                   } 
                 },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                   PopupMenuItem<String>( value: 'START',  child: Text(lblLocationChanges),),
-                  PopupMenuItem<String>( value: 'SHOWLL',  child: Text(lblShowLatLng),),
-                  const PopupMenuDivider(),
                     const PopupMenuItem<String>( value: 'CURRENT',  child: Text('Show current location'),),
                 ],
               ),
@@ -119,11 +113,13 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
       ),
       body: Column(
         children: [
-          const Text(""),
+          const SizedBox(height: (3),),  
           SizedBox(
             width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.7,
-            child: const Map001()),  
+            height: (MediaQuery.of(context).size.height - 200),
+            child: const Map001(),
+          ),  
+          Text("(${GeoData.counter}) ${locationNotifierProvider.loc01.lat} ${locationNotifierProvider.loc01.lat} ", textAlign: TextAlign.left)
         ],
       ),
     );

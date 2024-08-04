@@ -34,10 +34,8 @@ class Map001State extends State<Map001> {
 Widget build(BuildContext context) {
     return Consumer<LocationNotifier>(
       builder: (context, provider , child) {
-      const double lat =51.509364; 
-      const double lng =-0.128928;
-
-      logger.i("BULD CONTEXT: ${provider.loc01.lat} x ${provider.loc01.lng}");
+      const double lat =1.3521; 
+      const double lng =103.8198;
       return Scaffold(
           body: Stack(
             children: [ 
@@ -54,11 +52,6 @@ Widget build(BuildContext context) {
                 },
               ),
               children: [
-                // TileLayer(
-                //   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                //   userAgentPackageName: 'com.nirvasoft.gps001',
-                // ),
-
                 TileLayer(
                   urlTemplate:"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                   tileProvider: CancellableNetworkTileProvider(),
