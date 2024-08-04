@@ -47,8 +47,10 @@ Widget build(BuildContext context) {
                 initialCenter: const LatLng(lat, lng), //london
                 initialZoom: GeoData.zoom,
                 onPositionChanged: (position, hasGesture) {
-                  GeoData.centerMap=false;
                   GeoData.zoom=position.zoom;
+                  if (hasGesture) {
+                    setState(() {GeoData.centerMap=false;});
+                  }
                 },
               ),
               children: [
@@ -94,8 +96,7 @@ Widget _refreshMap() {
             width: 40, height: 40,
             icon: const Icon( Icons.cached, color: Colors.white,),
             onClick: () async {
-              refreshing = true;
-              setState(() {});
+              setState(() {refreshing = true;});
               Timer(const Duration(seconds: 1), () {
                 setState(() { refreshing = false;}); // set refreshing dones
                 }
@@ -116,7 +117,9 @@ Widget _refreshMap() {
               color: Colors.white,
             ),
             onClick: ()  {
-              GeoData.centerMap=true;
+              setState(() {
+                  GeoData.centerMap=true;
+              });
               locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom); 
             },
           );
