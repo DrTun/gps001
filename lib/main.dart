@@ -66,11 +66,11 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
       if (GeoData.centerMap){locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom);}
       if (GeoData.showLatLng){MyHelpers.showIt("$lat x $lng ",label: "(${GeoData.counter}) ",sec: 2); }
   }
-  void moveHere(controller) async {
+  void moveHere() async {
       var locationData = await GeoData.getCurrentLocation(location); 
       if (locationData != null) {
         locationNotifierProvider.updateLoc1(GeoData.lat, GeoData.lng, GeoData.dtime); 
-        controller.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom); 
+        locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom); 
         if (GeoData.showLatLng){ MyHelpers.showIt("$locationData.latitude x $locationData.longitude",label: "Current Location",sec: 5);}
       } else { logger.i("Permission Denied"); }    
   }
@@ -104,17 +104,14 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
                       GeoData.showLatLng=true;
                       setState(() {lblShowLatLng="Hide Lat & Lng";});
                     } 
-                  } else if (value =="CURRENT"){ moveHere(locationNotifierProvider.mapController); 
-                  } else if (value =="CENTERMAP"){  
-                    GeoData.centerMap=true;
-                  }
+                  } else if (value =="CURRENT"){ moveHere(); 
+                  } 
                 },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                   PopupMenuItem<String>( value: 'START',  child: Text(lblLocationChanges),),
-                    const PopupMenuItem<String>( value: 'CURRENT',  child: Text('Go to current location'),),
-                    const PopupMenuDivider(),
-                  const PopupMenuItem<String>( value: 'CENTERMAP', child: Text("Center Map"),),
                   PopupMenuItem<String>( value: 'SHOWLL',  child: Text(lblShowLatLng),),
+                  const PopupMenuDivider(),
+                    const PopupMenuItem<String>( value: 'CURRENT',  child: Text('Show current location'),),
                 ],
               ),
             ],

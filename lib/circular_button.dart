@@ -6,7 +6,6 @@ class CircularButton extends StatelessWidget {
   final Color color;
   final Icon icon;
   final VoidCallback? onClick;
-
   const CircularButton(
       {super.key,
       required this.color,
@@ -14,7 +13,6 @@ class CircularButton extends StatelessWidget {
       required this.height,
       required this.icon,
       required this.onClick});
-
   @override
   Widget build(BuildContext context) {
     return Container(

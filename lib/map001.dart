@@ -17,7 +17,7 @@ class Map001 extends StatefulWidget {
 }
 
 class Map001State extends State<Map001> {
-  late LocationNotifier provider ;
+  late LocationNotifier locationNotifierProvider ;
   final List<Marker> markers = [];
   //late MapController mapctrl; 
   final  mapctrl = MapController();
@@ -27,7 +27,7 @@ class Map001State extends State<Map001> {
   void initState() {
     super.initState();
     setState(() {
-    provider = Provider.of<LocationNotifier>(context,listen: false);
+    locationNotifierProvider = Provider.of<LocationNotifier>(context,listen: false);
     });
   }
 @override
@@ -55,21 +55,24 @@ Widget build(BuildContext context) {
                 ),
                 MarkerLayer(rotate: true, markers: getmarkers(provider)),
               ],
-            ),                  Positioned(
+            ),
+            Positioned(
                   right: 10,
-                  bottom: 80,
+                  bottom: 50,
                   child: _refreshMap()),
+            Positioned(
+                  left: 10,
+                  bottom: 50,
+                  child: _recenter()),
             ],
           ),
         );
   });
 }
-
   Widget _refreshMap() {
     return circling
         ? Container(
-            decoration: const BoxDecoration(
-                color: Colors.lightBlue, shape: BoxShape.circle),
+            decoration: const BoxDecoration(color: Colors.lightBlue, shape: BoxShape.circle),
             width: 40,
             height: 40,
             child: SpinKitFadingCircle(
@@ -93,7 +96,7 @@ Widget build(BuildContext context) {
             onClick: () async {
               circling = true;
               setState(() {});
-              Timer(const Duration(seconds: 5), () {
+              Timer(const Duration(seconds: 1), () {
                 setState(() {
                   circling = false;
                 });
@@ -101,6 +104,25 @@ Widget build(BuildContext context) {
             },
           );
   }
+  Widget _recenter() {
+    return
+          GeoData.centerMap
+          ? const Text("Center")
+          : CircularButton(
+            color: Colors.lightBlue,
+            width: 40,
+            height: 40,
+            icon: const Icon(
+              Icons.center_focus_weak_rounded,
+              color: Colors.white,
+            ),
+            onClick: ()  {
+              locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom); 
+              GeoData.centerMap=true;
+            },
+          );
+  }
+  
 
   List<Marker> getmarkers(LocationNotifier model) { 
       markers.clear();
