@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
-import 'helpers.dart';
-import 'map001.dart';
-import 'geodata.dart';
 import 'package:location/location.dart';
 import 'package:logger/web.dart';
 import 'package:provider/provider.dart';
+
+import 'helpers.dart';
+import 'map001.dart';
+import 'geodata.dart';
 
 void main() async{
   runApp(
@@ -64,14 +65,14 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
       GeoData.setLocation(currentLocation.latitude!, currentLocation.longitude!, DateTime.now());
       locationNotifierProvider.updateLoc1(GeoData.lat, GeoData.lng, GeoData.dtime); 
       if (GeoData.centerMap){locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom);}
-      if (GeoData.showLatLng){MyHelpers.showIt("$lat x $lng ",label: "(${GeoData.counter}) ",sec: 2); }
+      if (GeoData.showLatLng){MyHelpers.showIt("$lat x $lng ",label: "(${GeoData.counter}) ",sec: 1); }
   }
   void moveHere() async {
       var locationData = await GeoData.getCurrentLocation(location); 
       if (locationData != null) {
         locationNotifierProvider.updateLoc1(GeoData.lat, GeoData.lng, GeoData.dtime); 
         locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom); 
-        if (GeoData.showLatLng){ MyHelpers.showIt("$locationData.latitude x $locationData.longitude",label: "Current Location",sec: 5);}
+        if (GeoData.showLatLng){ MyHelpers.showIt("$locationData.latitude x $locationData.longitude \n\n\n",label: "Current Location",sec: 3,bcolor: Colors.orange);}
       } else { logger.i("Permission Denied"); }    
   }
   @override

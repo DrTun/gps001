@@ -15,13 +15,12 @@ class Map001 extends StatefulWidget {
   @override
   Map001State createState() => Map001State();
 }
-
 class Map001State extends State<Map001> {
   late LocationNotifier locationNotifierProvider ;
   final List<Marker> markers = [];
   //late MapController mapctrl; 
   final  mapctrl = MapController();
-  bool circling = false;
+  bool refreshing = false;
   
   @override
   void initState() {
@@ -46,7 +45,10 @@ Widget build(BuildContext context) {
               options:   MapOptions(
                 initialCenter: const LatLng(lat, lng), //london
                 initialZoom: GeoData.zoom,
-                onPositionChanged: (position, hasGesture) {GeoData.centerMap=false;},
+                onPositionChanged: (position, hasGesture) {
+                  GeoData.centerMap=false;
+                  GeoData.zoom=position.zoom;
+                },
               ),
               children: [
                 TileLayer(
@@ -69,45 +71,36 @@ Widget build(BuildContext context) {
         );
   });
 }
-  Widget _refreshMap() {
-    return circling
+Widget _refreshMap() {
+    return refreshing // cheeck if the map is refreshing
         ? Container(
             decoration: const BoxDecoration(color: Colors.lightBlue, shape: BoxShape.circle),
-            width: 40,
-            height: 40,
+            width: 40, height: 40,
             child: SpinKitFadingCircle(
               size: 30.0,
-              itemBuilder: (BuildContext context, int index) {
-                return DecoratedBox(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10)),
-                );
-              },
-            ))
+              itemBuilder: (BuildContext context, int index) {  
+                return DecoratedBox( decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(10)),);
+                },
+              )
+            )
         : CircularButton(
             color: Colors.lightBlue,
-            width: 40,
-            height: 40,
-            icon: const Icon(
-              Icons.cached,
-              color: Colors.white,
-            ),
+            width: 40, height: 40,
+            icon: const Icon( Icons.cached, color: Colors.white,),
             onClick: () async {
-              circling = true;
+              refreshing = true;
               setState(() {});
               Timer(const Duration(seconds: 1), () {
-                setState(() {
-                  circling = false;
-                });
-              });
+                setState(() { refreshing = false;}); // set refreshing dones
+                }
+              );
             },
           );
   }
   Widget _recenter() {
     return
-          GeoData.centerMap
-          ? const Text("Center")
+          GeoData.centerMap // check if the map is centered
+            ? const Text("Centered",style: TextStyle(color: Colors.blueGrey),)
           : CircularButton(
             color: Colors.lightBlue,
             width: 40,
@@ -122,8 +115,6 @@ Widget build(BuildContext context) {
             },
           );
   }
-  
-
   List<Marker> getmarkers(LocationNotifier model) { 
       markers.clear();
       markers.add(Marker(

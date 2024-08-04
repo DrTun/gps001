@@ -13,10 +13,11 @@ class MyHelpers{
       msg: txt,toastLength: Toast.LENGTH_SHORT,gravity: ToastGravity.BOTTOM,
       timeInSecForIosWeb: sec,  backgroundColor: bcolor, textColor: Colors.white,fontSize: 16.0);
   }
-  static showIt(String? value, {String? label, int? sec}){
+  static showIt(String? value, {String? label, int? sec, Color? bcolor}){
   label ??= "Value";
   sec ??=2;
+  bcolor ??= Colors.lightBlue;
   logger.i("$label $value");
-  MyHelpers.msg("$label:  $value",bcolor: Colors.orange,sec: sec);   
+  MyHelpers.msg("$label:  $value",bcolor: bcolor,sec: sec);   
 }
 }
