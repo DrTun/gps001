@@ -34,8 +34,8 @@ class MyStatefulWidget extends StatefulWidget {
 class MyStatefulWidgetState extends State<MyStatefulWidget> {
   final logger=Logger();
   late LocationNotifier locationNotifierProvider ;  // Provider Declaration and init
+  String lblLocationChanges=GeoData.listenChanges?"Pause Location Service":"Resume Location Service";
   String lblShowLatLng=GeoData.showLatLng?"Hide Lat & Lng":"Show Lat & Lng On";
-  String lblLocationChanges=GeoData.listenChanges?"Hide location marker":"Show location marker";
   
   // GPS Declare >>>>
   final Location location = Location();
@@ -84,17 +84,14 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
                       GeoData.listenChanges=false;
                       GeoData.counter=0;
                       locationSubscription.resume(); 
-                      setState(() {lblLocationChanges="Hide location marker";});
+                      setState(() {lblLocationChanges="Pause Location Service";});
                     } else {
                       GeoData.listenChanges=true;
                       GeoData.centerMap=true;
                       GeoData.counter=0;
                       locationSubscription.pause(); 
-                      setState(() {lblLocationChanges="Show location marker";});
+                      setState(() {lblLocationChanges="Resume Location Service";});
                     }
-                  } else if (value =="CURRENT"){ moveHere(locationNotifierProvider.mapController); 
-                  } else if (value =="CENTERMAP"){  
-                    GeoData.centerMap=true;
                   }else if (value =="SHOWLL"){ 
                     if(GeoData.showLatLng) {
                       GeoData.showLatLng=false;
@@ -103,13 +100,17 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
                       GeoData.showLatLng=true;
                       setState(() {lblShowLatLng="Hide Lat & Lng";});
                     } 
+                  } else if (value =="CURRENT"){ moveHere(locationNotifierProvider.mapController); 
+                  } else if (value =="CENTERMAP"){  
+                    GeoData.centerMap=true;
                   }
                 },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  PopupMenuItem<String>( value: 'START',  child: Text(lblLocationChanges),),
+                    const PopupMenuItem<String>( value: 'CURRENT',  child: Text('Go to current location'),),
+                    const PopupMenuDivider(),
                   const PopupMenuItem<String>( value: 'CENTERMAP', child: Text("Center Map"),),
                   PopupMenuItem<String>( value: 'SHOWLL',  child: Text(lblShowLatLng),),
-                  PopupMenuItem<String>( value: 'START',  child: Text(lblLocationChanges),),
-                  const PopupMenuItem<String>( value: 'CURRENT',  child: Text('My Location'),),
                 ],
               ),
             ],

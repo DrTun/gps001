@@ -49,14 +49,6 @@ Widget build(BuildContext context) {
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.nirvasoft.gps001',
                 ),
-                RichAttributionWidget(
-                  attributions: [
-                    TextSourceAttribution(
-                      ' ${provider.loc01.lat} ${provider.loc01.lng}',
-                      onTap: () => launchUrl(Uri.parse('https://www.nirvasoft.com')),
-                    ),
-                  ],
-                ),
                 MarkerLayer(rotate: true, markers: getmarkers(provider)),
               ],
             ),
