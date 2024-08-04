@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gps001/circular_button.dart';
 import 'package:latlong2/latlong.dart';
@@ -51,9 +52,14 @@ Widget build(BuildContext context) {
                 },
               ),
               children: [
+                // TileLayer(
+                //   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                //   userAgentPackageName: 'com.nirvasoft.gps001',
+                // ),
+
                 TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.nirvasoft.gps001',
+                  urlTemplate:"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  tileProvider: CancellableNetworkTileProvider(),
                 ),
                 MarkerLayer(rotate: true, markers: getmarkers(provider)),
               ],
@@ -110,8 +116,8 @@ Widget _refreshMap() {
               color: Colors.white,
             ),
             onClick: ()  {
-              locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom); 
               GeoData.centerMap=true;
+              locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom); 
             },
           );
   }
