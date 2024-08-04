@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:gps001/circular_button.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'helpers.dart'; 
@@ -17,7 +21,8 @@ class Map001State extends State<Map001> {
   final List<Marker> markers = [];
   //late MapController mapctrl; 
   final  mapctrl = MapController();
-
+  bool circling = false;
+  
   @override
   void initState() {
     super.initState();
@@ -50,12 +55,53 @@ Widget build(BuildContext context) {
                 ),
                 MarkerLayer(rotate: true, markers: getmarkers(provider)),
               ],
-            ),
+            ),                  Positioned(
+                  right: 10,
+                  bottom: 80,
+                  child: _refreshMap()),
             ],
           ),
         );
   });
 }
+
+  Widget _refreshMap() {
+    return circling
+        ? Container(
+            decoration: const BoxDecoration(
+                color: Colors.lightBlue, shape: BoxShape.circle),
+            width: 40,
+            height: 40,
+            child: SpinKitFadingCircle(
+              size: 30.0,
+              itemBuilder: (BuildContext context, int index) {
+                return DecoratedBox(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10)),
+                );
+              },
+            ))
+        : CircularButton(
+            color: Colors.lightBlue,
+            width: 40,
+            height: 40,
+            icon: const Icon(
+              Icons.cached,
+              color: Colors.white,
+            ),
+            onClick: () async {
+              circling = true;
+              setState(() {});
+              Timer(const Duration(seconds: 5), () {
+                setState(() {
+                  circling = false;
+                });
+              });
+            },
+          );
+  }
+
   List<Marker> getmarkers(LocationNotifier model) { 
       markers.clear();
       markers.add(Marker(

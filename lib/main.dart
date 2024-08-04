@@ -46,8 +46,12 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
     super.initState();    
     // GPS Init >>>> 
     locationNotifierProvider = Provider.of<LocationNotifier>(context,listen: false);
-    GeoData.chkPermissions(location).then((permits) => () {if (permits==false) {logger.i("Permission Denied");}});
-    location.enableBackgroundMode(enable: true);
+    GeoData.chkPermissions(location).then((permits) => () {
+      if (permits==false) {logger.i("Permission Denied");}
+      else {   
+        location.enableBackgroundMode(enable: true);
+      }
+    });
     location.changeSettings(accuracy: LocationAccuracy.high, interval: GeoData.interval, distanceFilter: GeoData.distance);
     locationSubscription = location.onLocationChanged.listen((LocationData currentLocation) {repeat(currentLocation);});
     if (GeoData.listenChanges==false) locationSubscription.pause();
