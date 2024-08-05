@@ -49,19 +49,27 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
     initGeoData();
   }
   @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // lifecycle observer
+    locationSubscription.cancel();
+    super.dispose();
+  }
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) { // Lifecycle
     super.didChangeAppLifecycleState(state);
     logger.e("LifeCycle State: $state");
     if (state == AppLifecycleState.paused) {
       logger.e("Background");
-      location.enableBackgroundMode(enable: true);
+      bg();
     } 
     else if (state == AppLifecycleState.resumed) {}
     else if (state == AppLifecycleState.inactive) {
-      location.enableBackgroundMode(enable: true);
+      bg();
     }
   }
-  
+  Future<void> bg() async {
+    await location.enableBackgroundMode(enable: true);
+  }
   Future<void> initGeoData() async {
     try {
       locationNotifierProvider = Provider.of<LocationNotifier>(context,listen: false);
