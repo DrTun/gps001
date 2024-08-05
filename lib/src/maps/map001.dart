@@ -20,9 +20,8 @@ class Map001State extends State<Map001> {
   final List<Marker> markers = [];
   //late MapController mapctrl; 
   final  mapctrl = MapController();
-  bool refreshing = false;
-  bool switchcar = false;
-  bool switchit = false;
+  bool refreshing = false; 
+  bool switchon = false;
   final ValueNotifier<bool> isStartValue = ValueNotifier<bool>(false);
 
   @override
@@ -64,7 +63,7 @@ Widget build(BuildContext context) {
             Positioned( // refresh button
                   right: 10,
                   top: 10,
-                  child: switchIt()),
+                  child: switchOn()),
             Positioned( // refresh button
                   right: 10,
                   bottom: 50,
@@ -133,20 +132,20 @@ Widget refreshCircle() {
             },
           );
   }
-  Widget switchIt() {
-    return switchit // cheeck if the map is refreshing
+  Widget switchOn() {
+    return switchon // cheeck if the map is refreshing
         ? SwitchOn( // show refresh icon onclick go refreshing (rotate)
             value: true, 
             label: "Track",
             onClick: () async {
-              setState(() {switchit = false;});
+              setState(() {switchon = false;});
             },
           )
         : SwitchOn( // show refresh icon onclick go refreshing (rotate)
             value: false, 
             label: "Track",
             onClick: () async {
-              setState(() {switchit = true;});
+              setState(() {switchon = true;});
             },
           );
   }
