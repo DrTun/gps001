@@ -51,7 +51,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
     try {
       locationNotifierProvider = Provider.of<LocationNotifier>(context,listen: false);
       if (await GeoData.chkPermissions(location)){
-        await location.enableBackgroundMode(enable: true);
+        //await location.enableBackgroundMode(enable: true);
         await location.changeSettings(accuracy: LocationAccuracy.high, interval: GeoData.interval, distanceFilter: GeoData.distance);
         locationSubscription = location.onLocationChanged.listen((LocationData currentLocation) {changeLocations(currentLocation);});
         if (GeoData.listenChanges==false) locationSubscription.pause();
