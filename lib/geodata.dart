@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:gps001/helpers.dart';
+import 'package:gps001/src/helpers/helpers.dart';
 import 'package:location/location.dart'; 
 //  -------------------------------------    GeoData (Property of Nirvasoft.com)
 class GeoData{
   static int counter=0;
-  static int interval=10000;
-  static double distance=0;
   static double lat=0;
   static double lng=0; 
+  static DateTime dtime= DateTime.now();
+
   static bool showLatLng=true;
   static bool centerMap=true;
   static bool listenChanges=true;
   static double zoom=16;
-  static DateTime dtime= DateTime.now();
+  static int interval=10000;
+  static double distance=0;
+
+  static const double defaultLat=1.3521;
+  static const double defaultLng=103.8198;
 
   static void setLocation(double lat, double lng, DateTime dt){
     if (lat!=0 && lng!=0){

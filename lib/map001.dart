@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:gps001/circular_button.dart';
+import 'package:gps001/src/widgets/circular_button.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'geodata.dart';
@@ -32,8 +32,8 @@ class Map001State extends State<Map001> {
 Widget build(BuildContext context) {
     return Consumer<LocationNotifier>(
       builder: (context, provider , child) {
-      const double lat =1.3521; 
-      const double lng =103.8198;
+      const double lat =GeoData.defaultLat; 
+      const double lng =GeoData.defaultLng;
       return Scaffold(
           body: Stack(
             children: [ 
@@ -54,14 +54,14 @@ Widget build(BuildContext context) {
                   urlTemplate:"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                   tileProvider: CancellableNetworkTileProvider(),
                 ),
-                MarkerLayer(rotate: true, markers: getmarkers(provider)),
+                MarkerLayer(rotate: true, markers: _markers(provider)),  // add markers
               ],
             ),
-            Positioned(
+            Positioned( // refresh button
                   right: 10,
                   bottom: 50,
                   child: _refreshMap()),
-            Positioned(
+            Positioned( //  recentre button
                   left: 10,
                   bottom: 50,
                   child: _recenter()),
@@ -72,7 +72,7 @@ Widget build(BuildContext context) {
 }
 Widget _refreshMap() {
     return refreshing // cheeck if the map is refreshing
-        ? Container(
+        ? Container( // show rotating circle
             decoration: const BoxDecoration(color: Colors.lightBlue, shape: BoxShape.circle),
             width: 40, height: 40,
             child: SpinKitFadingCircle(
@@ -82,7 +82,7 @@ Widget _refreshMap() {
                 },
               )
             )
-        : CircularButton(
+        : CircularButton( // show refresh icon onclick go refreshing (rotate)
             color: Colors.lightBlue,
             width: 40, height: 40,
             icon: const Icon( Icons.cached, color: Colors.white,),
@@ -97,8 +97,8 @@ Widget _refreshMap() {
   }
   Widget _recenter() {
     return
-          GeoData.centerMap // check if the map is centered
-            ? const Text("Centered",style: TextStyle(color: Colors.blueGrey),)
+          GeoData.centerMap // check if the map is centered; i centered no icon
+          ? const Text("Centered",style: TextStyle(color: Colors.blueGrey),)
           : CircularButton(
             color: Colors.lightBlue,
             width: 40,
@@ -115,14 +115,14 @@ Widget _refreshMap() {
             },
           );
   }
-  List<Marker> getmarkers(LocationNotifier model) { 
+  List<Marker> _markers(LocationNotifier model) { 
       markers.clear();
       markers.add(Marker(
         point: LatLng(model.loc01.lat, model.loc01.lng),
         width: 25,
         height: 25,
         alignment: Alignment.center,
-        child: Image.asset('assets/images/circle_green.png',scale: 1.0,),
+        child: Image.asset('assets/images/online.png',scale: 1.0,),
       ));
     return markers;
   }

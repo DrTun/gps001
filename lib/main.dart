@@ -5,7 +5,7 @@ import 'package:location/location.dart';
 import 'package:logger/web.dart';
 import 'package:provider/provider.dart';
 
-import 'helpers.dart';
+import 'src/helpers/helpers.dart';
 import 'map001.dart';
 import 'geodata.dart';
 
