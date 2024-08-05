@@ -6,7 +6,7 @@ import 'package:logger/web.dart';
 
 import 'package:provider/provider.dart';
 import 'src/helpers/helpers.dart';
-import 'map001.dart';
+import 'src/maps/map001.dart';
 import 'src/providers/geodata.dart';
 
 void main() async{

@@ -6,7 +6,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gps001/src/widgets/circular_button.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
-import 'src/providers/geodata.dart';
+import '../providers/geodata.dart';
 //  -------------------------------------    Map001 (Property of Nirvasoft.com)
 class Map001 extends StatefulWidget {
   const Map001({super.key});
