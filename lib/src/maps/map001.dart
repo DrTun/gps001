@@ -62,7 +62,7 @@ Widget build(BuildContext context) {
             ),
             Positioned( // refresh button
                   right: 10,
-                  top: 10,
+                  top: 0,
                   child: switchOn()),
             Positioned( // refresh button
                   right: 10,
