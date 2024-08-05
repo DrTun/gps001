@@ -32,7 +32,7 @@ class MyStatefulWidget extends StatefulWidget {
   MyStatefulWidgetState createState() => MyStatefulWidgetState();
 }
 
-class MyStatefulWidgetState extends State<MyStatefulWidget> {
+class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingObserver{
   final logger=Logger();
   late LocationNotifier locationNotifierProvider ;  // Provider Declaration and init
   String lblLocationChanges=GeoData.listenChanges?"Pause Location Service":"Resume Location Service";
@@ -45,13 +45,28 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   void initState() {
     super.initState();    
+    WidgetsBinding.instance.addObserver(this); // lifecycle observer
     initGeoData();
   }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) { // Lifecycle
+    super.didChangeAppLifecycleState(state);
+    logger.e("LifeCycle State: $state");
+    if (state == AppLifecycleState.paused) {
+      logger.e("Background");
+      location.enableBackgroundMode(enable: true);
+    } 
+    else if (state == AppLifecycleState.resumed) {}
+    else if (state == AppLifecycleState.inactive) {
+      location.enableBackgroundMode(enable: true);
+    }
+  }
+  
   Future<void> initGeoData() async {
     try {
       locationNotifierProvider = Provider.of<LocationNotifier>(context,listen: false);
       if (await GeoData.chkPermissions(location)){
-        //await location.enableBackgroundMode(enable: true);
+        //location.enableBackgroundMode(enable: true);
         await location.changeSettings(accuracy: LocationAccuracy.high, interval: GeoData.interval, distanceFilter: GeoData.distance);
         locationSubscription = location.onLocationChanged.listen((LocationData currentLocation) {changeLocations(currentLocation);});
         if (GeoData.listenChanges==false) locationSubscription.pause();
