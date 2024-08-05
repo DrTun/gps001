@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:logger/web.dart';
-import 'package:provider/provider.dart';
 
+import 'package:provider/provider.dart';
 import 'src/helpers/helpers.dart';
 import 'map001.dart';
-import 'geodata.dart';
+import 'src/providers/geodata.dart';
 
 void main() async{
   runApp(
@@ -53,16 +53,15 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
       if (await GeoData.chkPermissions(location)){
         await location.enableBackgroundMode(enable: true);
         await location.changeSettings(accuracy: LocationAccuracy.high, interval: GeoData.interval, distanceFilter: GeoData.distance);
-        locationSubscription = location.onLocationChanged.listen((LocationData currentLocation) {repeat(currentLocation);});
+        locationSubscription = location.onLocationChanged.listen((LocationData currentLocation) {changeLocations(currentLocation);});
         if (GeoData.listenChanges==false) locationSubscription.pause();
-      } else {   
-        logger.i("Permission Denied");
-      } 
+      } else {   logger.i("Permission Denied");} 
     } catch (e) {
-      logger.i("Error: $e");
+      logger.i("Exception (initGeoData): $e");
     }
   }
-  void repeat(LocationData currentLocation){
+  void changeLocations(LocationData currentLocation){
+    try {
       GeoData.counter++;
       GeoData.setLocation(currentLocation.latitude!, currentLocation.longitude!, DateTime.now());
       setState(() {
@@ -70,14 +69,21 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
       });
       if (GeoData.centerMap){locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom);}
       if (GeoData.showLatLng){logger.i("(${GeoData.counter}) ${currentLocation.latitude} x ${currentLocation.longitude}");}
+    } catch (e) {
+      logger.i("Exception (changeLocations): $e");
+    }
   }
   void moveHere() async {
+    try {
       var locationData = await GeoData.getCurrentLocation(location); 
       if (locationData != null) {
         locationNotifierProvider.updateLoc1(GeoData.lat, GeoData.lng, GeoData.dtime); 
         locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom); 
         MyHelpers.showIt("\n${locationNotifierProvider.loc01.lat}\n${locationNotifierProvider.loc01.lng}",label: "You are here",sec: 4,bcolor: Colors.orange);
-      } else { logger.i("Permission Denied"); }    
+      } else { logger.i("Invalid Location!"); }    
+    } catch (e) {
+      logger.i("Exception (moveHere): $e");
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -88,7 +94,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
               PopupMenuButton<String>(          
                 icon: const Icon(Icons.more_vert),
                 onSelected: (value) async { 
-                  if (value == 'START') {
+                  if (value == 'GPS-START-STOP') {
                     if(GeoData.listenChanges) {
                       GeoData.listenChanges=false;
                       GeoData.counter=0;
@@ -101,12 +107,11 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
                       locationSubscription.pause(); 
                       setState(() {lblLocationChanges="Resume Location Service";});
                     }
-                  } else if (value =="CURRENT"){ moveHere(); 
-                  } 
+                  } else if (value =="MOVE-HERE"){ moveHere(); } 
                 },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                  PopupMenuItem<String>( value: 'START',  child: Text(lblLocationChanges),),
-                    const PopupMenuItem<String>( value: 'CURRENT',  child: Text('Show current location'),),
+                  PopupMenuItem<String>( value: 'GPS-START-STOP',  child: Text(lblLocationChanges),),
+                    const PopupMenuItem<String>( value: 'MOVE-HERE',  child: Text('Show current location'),),
                 ],
               ),
             ],

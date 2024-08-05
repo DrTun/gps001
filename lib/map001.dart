@@ -6,7 +6,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gps001/src/widgets/circular_button.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
-import 'geodata.dart';
+import 'src/providers/geodata.dart';
 //  -------------------------------------    Map001 (Property of Nirvasoft.com)
 class Map001 extends StatefulWidget {
   const Map001({super.key});
@@ -119,10 +119,10 @@ Widget _refreshMap() {
       markers.clear();
       markers.add(Marker(
         point: LatLng(model.loc01.lat, model.loc01.lng),
-        width: 25,
-        height: 25,
+        width: 50,
+        height: 50,
         alignment: Alignment.center,
-        child: Image.asset('assets/images/online.png',scale: 1.0,),
+        child: Image.asset('assets/images/here.png',scale: 1.0,),
       ));
     return markers;
   }
