@@ -1,9 +1,10 @@
-import 'dart:async';
+import 'dart:async'; 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:gps001/src/widgets/circular_button.dart';
+import 'package:gps001/src/widgets/circularbutton.dart'; 
+import 'package:gps001/src/widgets/switchon.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import '../providers/geodata.dart';
@@ -20,7 +21,10 @@ class Map001State extends State<Map001> {
   //late MapController mapctrl; 
   final  mapctrl = MapController();
   bool refreshing = false;
-  
+  bool switchcar = false;
+  bool switchit = false;
+  final ValueNotifier<bool> isStartValue = ValueNotifier<bool>(false);
+
   @override
   void initState() {
     super.initState();
@@ -54,23 +58,37 @@ Widget build(BuildContext context) {
                   urlTemplate:"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                   tileProvider: CancellableNetworkTileProvider(),
                 ),
-                MarkerLayer(rotate: true, markers: _markers(provider)),  // add markers
+                MarkerLayer(rotate: true, markers: addMarkers(provider)),  // add markers
               ],
             ),
             Positioned( // refresh button
                   right: 10,
+                  top: 10,
+                  child: switchIt()),
+            Positioned( // refresh button
+                  right: 10,
                   bottom: 50,
-                  child: _refreshMap()),
+                  child: refreshCircle()),
             Positioned( //  recentre button
                   left: 10,
                   bottom: 50,
-                  child: _recenter()),
+                  child: reCenter()),
             ],
           ),
         );
   });
 }
-Widget _refreshMap() {
+
+  List<Marker> addMarkers(LocationNotifier model) { 
+      markers.clear();
+      markers.add(Marker(
+        point: LatLng(model.loc01.lat, model.loc01.lng), width: 100,height: 100,alignment: Alignment.center,
+        child: Image.asset('assets/images/here.png',scale: 1.0,),
+      ));
+    return markers;
+  }
+
+Widget refreshCircle() {
     return refreshing // cheeck if the map is refreshing
         ? Container( // show rotating circle
             decoration: const BoxDecoration(color: Colors.lightBlue, shape: BoxShape.circle),
@@ -80,8 +98,8 @@ Widget _refreshMap() {
               itemBuilder: (BuildContext context, int index) {  
                 return DecoratedBox( decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(10)),);
                 },
-              )
             )
+          )
         : CircularButton( // show refresh icon onclick go refreshing (rotate)
             color: Colors.lightBlue,
             width: 40, height: 40,
@@ -95,7 +113,7 @@ Widget _refreshMap() {
             },
           );
   }
-  Widget _recenter() {
+  Widget reCenter() {
     return
           GeoData.centerMap // check if the map is centered; i centered no icon
           ? const Text("Centered",style: TextStyle(color: Colors.blueGrey),)
@@ -115,16 +133,21 @@ Widget _refreshMap() {
             },
           );
   }
-  List<Marker> _markers(LocationNotifier model) { 
-      markers.clear();
-      markers.add(Marker(
-        point: LatLng(model.loc01.lat, model.loc01.lng),
-        width: 100,
-        height: 100,
-        alignment: Alignment.center,
-        child: Image.asset('assets/images/here.png',scale: 1.0,),
-      ));
-    return markers;
+  Widget switchIt() {
+    return switchit // cheeck if the map is refreshing
+        ? SwitchOn( // show refresh icon onclick go refreshing (rotate)
+            value: true, 
+            label: "Track",
+            onClick: () async {
+              setState(() {switchit = false;});
+            },
+          )
+        : SwitchOn( // show refresh icon onclick go refreshing (rotate)
+            value: false, 
+            label: "Track",
+            onClick: () async {
+              setState(() {switchit = true;});
+            },
+          );
   }
-
 }
