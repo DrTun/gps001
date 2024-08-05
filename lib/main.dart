@@ -60,7 +60,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
       logger.i("Exception (initGeoData): $e");
     }
   }
-  void changeLocations(LocationData currentLocation){
+  void changeLocations(LocationData currentLocation){ //listen to location changes
     try {
       GeoData.counter++;
       GeoData.setLocation(currentLocation.latitude!, currentLocation.longitude!, DateTime.now());
@@ -73,7 +73,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
       logger.i("Exception (changeLocations): $e");
     }
   }
-  void moveHere() async {
+  void moveHere() async { // butten event
     try {
       var locationData = await GeoData.getCurrentLocation(location); 
       if (locationData != null) {

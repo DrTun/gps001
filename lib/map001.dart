@@ -119,8 +119,8 @@ Widget _refreshMap() {
       markers.clear();
       markers.add(Marker(
         point: LatLng(model.loc01.lat, model.loc01.lng),
-        width: 50,
-        height: 50,
+        width: 100,
+        height: 100,
         alignment: Alignment.center,
         child: Image.asset('assets/images/here.png',scale: 1.0,),
       ));
