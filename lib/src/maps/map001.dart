@@ -113,12 +113,12 @@ Widget build(BuildContext context) {
   }
   Widget switchOn() {
     return switchon // cheeck if on or off
-        ? SwitchOn(value: true, label: "Start",
+        ? SwitchOn(value: true, label: "End",
             onClick: () async {
               setState(() {switchon = false;});
             },
           )
-        : SwitchOn(value: false, label: "End",
+        : SwitchOn(value: false, label: "Start",
             onClick: () async {
               setState(() {switchon = true;});
             },

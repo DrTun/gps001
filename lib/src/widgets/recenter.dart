@@ -19,7 +19,7 @@ class ReCenter extends StatelessWidget {
     : CircularButton( // show refresh icon onclick go refreshing (rotate)
             color: Colors.lightBlue,
             width: 40, height: 40,
-            icon: const Icon( Icons.cached, color: Colors.white,),
+            icon: icon1,
             onClick: () async { 
                 onClick!(); 
             },

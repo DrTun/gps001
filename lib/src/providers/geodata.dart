@@ -13,7 +13,7 @@ class GeoData{
   static bool centerMap=true;
   static bool listenChanges=true;
   static double zoom=16;
-  static int interval=10000;
+  static int interval=2000;
   static double distance=0;
 
   static const double defaultLat=1.3521;

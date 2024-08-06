@@ -67,9 +67,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
       bg();
     }
   }
-  Future<void> bg() async {
-    await location.enableBackgroundMode(enable: true);
-  }
+  Future<void> bg() async {await location.enableBackgroundMode(enable: true);}
   Future<void> initGeoData() async {
     try {
       locationNotifierProvider = Provider.of<LocationNotifier>(context,listen: false);
