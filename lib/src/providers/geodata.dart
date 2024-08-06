@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart'; 
 //  -------------------------------------    GeoData (Property of Nirvasoft.com)
 class GeoData{
+  // GPS Data
   static int counter=0;
   static double currentLat=0;
   static double currentLng=0; 
@@ -13,7 +14,6 @@ class GeoData{
   static bool tripStarted=false;
   static Polyline polyline01 = Polyline(points: [], color: Colors.red,strokeWidth: origThickenss,);
   static List<DateTime> dtimeList01=[];
-
   static Polyline polyline01Fixed = Polyline(points: [], color: Colors.blue,strokeWidth: optiThickenss,);
   static List<DateTime> dtimeList01Fixed=[];
 
@@ -24,11 +24,10 @@ class GeoData{
   static double zoom=16;
   static int interval=1000;
   static double distance=0;
-  static double minDistance=5;
-  static double maxDistance=30;
+  static double minDistance=30;
+  static double maxDistance=100;
   static double origThickenss=3;
   static double optiThickenss=10;
-
   static const double defaultLat=1.2926;
   static const double defaultLng=103.8448;
 

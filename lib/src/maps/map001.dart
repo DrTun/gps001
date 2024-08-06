@@ -137,6 +137,8 @@ Widget build(BuildContext context) {
         : SwitchOn(value: false, label: "Start",
             onClick: () async {
               setState(() {switchon = true;});
+              GeoData.polyline01.points.clear();
+              GeoData.polyline01Fixed.points.clear();
               GeoData.startTrip();
             },
           );

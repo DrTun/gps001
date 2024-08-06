@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:logger/web.dart';
+import 'package:prompt_dialog/prompt_dialog.dart';
 
 import 'package:provider/provider.dart';
 import 'src/helpers/helpers.dart';
@@ -127,11 +128,17 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
                       locationSubscription.resume(); 
                       setState(() {lblLocationChanges="Pause Location Service";});
                     }
-                  } else if (value =="MOVE-HERE"){ moveHere(); } 
+                  } else if (value =="MOVE-HERE"){ moveHere(); 
+                  } else if (value =="ASKMIN"){ _minDistance(context); 
+                  } else if (value =="ASKMAX"){ _maxDistance(context); 
+                  }
                 },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                   PopupMenuItem<String>( value: 'GPS-START-STOP',  child: Text(lblLocationChanges),),
-                    const PopupMenuItem<String>( value: 'MOVE-HERE',  child: Text('Show current location'),),
+                  const PopupMenuItem<String>( value: 'MOVE-HERE',  child: Text('Show current location'),),
+                  const PopupMenuDivider(),
+                  const PopupMenuItem<String>( value: 'ASKMIN',  child: Text('Minimum Distance'),),
+                  const PopupMenuItem<String>( value: 'ASKMAX',  child: Text('Maximum Distance'),),
                 ],
               ),
             ],
@@ -148,4 +155,29 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
       ),
     );
   }
+
+
+  Future<void> _minDistance(BuildContext context) async {
+    String? result =  await prompt(
+              context,title: const Text('Minimum Distance?'),
+              initialValue: GeoData.minDistance.toString(),
+              textOK: const Text('OK'), textCancel: const Text('Cancel'),
+            );
+    if (result != null) {
+      double? parsedResult = double.tryParse(result);
+      if (parsedResult != null) {setState(() {GeoData.minDistance = parsedResult;});}
+    }
+  }
+  Future<void> _maxDistance(BuildContext context) async {
+    String? result =  await prompt(
+              context,title: const Text('Maximum Distance?'),
+              initialValue: GeoData.maxDistance.toString(),
+              textOK: const Text('OK'), textCancel: const Text('Cancel'),
+            );
+    if (result != null) {
+      double? parsedResult = double.tryParse(result);
+      if (parsedResult != null) {setState(() {GeoData.maxDistance = parsedResult;});}
+    }
+  }
+
 }
