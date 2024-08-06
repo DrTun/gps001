@@ -59,16 +59,17 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
   void didChangeAppLifecycleState(AppLifecycleState state) { // Lifecycle
     super.didChangeAppLifecycleState(state);
     logger.e("LifeCycle State: $state");
-    if (state == AppLifecycleState.paused) {
-      logger.e("Background");
-      bg();
-    } 
+    if (state == AppLifecycleState.paused) {bg();} 
     else if (state == AppLifecycleState.resumed) {}
-    else if (state == AppLifecycleState.inactive) {
-      bg();
+    else if (state == AppLifecycleState.inactive) { bg();}
+  }
+  Future<void> bg() async {
+    if (GeoData.tripStarted) {
+      await location.enableBackgroundMode(enable: true);
+    } else {
+      await location.enableBackgroundMode(enable: false);
     }
   }
-  Future<void> bg() async {await location.enableBackgroundMode(enable: true);}
   Future<void> initGeoData() async {
     try {
       locationNotifierProvider = Provider.of<LocationNotifier>(context,listen: false);
