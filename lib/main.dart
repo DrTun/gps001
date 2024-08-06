@@ -147,7 +147,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
             height: (MediaQuery.of(context).size.height - 200),
             child: const Map001(),
           ),  
-          Text("(${GeoData.counter}) ${locationNotifierProvider.loc01.lat} ${locationNotifierProvider.loc01.lat} ", textAlign: TextAlign.left)
+          Text("(${GeoData.counter}) ${locationNotifierProvider.loc01.lat} ${locationNotifierProvider.loc01.lat} ", textAlign: TextAlign.left,style: const TextStyle(fontSize: 9))
         ],
       ),
     );

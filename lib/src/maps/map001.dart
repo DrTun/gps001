@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:gps001/src/widgets/circularbutton.dart'; 
+import 'package:gps001/src/widgets/recenter.dart';
+import 'package:gps001/src/widgets/refreshcircle.dart'; 
 import 'package:gps001/src/widgets/switchon.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
@@ -86,64 +86,39 @@ Widget build(BuildContext context) {
       ));
     return markers;
   }
-
-Widget refreshCircle() {
-    return refreshing // cheeck if the map is refreshing
-        ? Container( // show rotating circle
-            decoration: const BoxDecoration(color: Colors.lightBlue, shape: BoxShape.circle),
-            width: 40, height: 40,
-            child: SpinKitFadingCircle(
-              size: 30.0,
-              itemBuilder: (BuildContext context, int index) {  
-                return DecoratedBox( decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(10)),);
-                },
-            )
-          )
-        : CircularButton( // show refresh icon onclick go refreshing (rotate)
-            color: Colors.lightBlue,
-            width: 40, height: 40,
-            icon: const Icon( Icons.cached, color: Colors.white,),
+  Widget reCenter() {
+    return 
+      ReCenter(
+          value: GeoData.centerMap,  
+          onClick: ()  {
+            setState(() {
+                GeoData.centerMap=true;
+            });
+            locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom); 
+          },
+      );
+  }
+  Widget refreshCircle() {
+    return refreshing // cheeck if on or off
+        ? RefreshCircle(value: true, onClick: () async {},)
+        : RefreshCircle(value: false,
             onClick: () async {
-              setState(() {refreshing = true;});
+              setState(() { refreshing = true;}); // start refreshing
               Timer(const Duration(seconds: 1), () {
-                setState(() { refreshing = false;}); // set refreshing dones
+                setState(() { refreshing = false;}); // done refreshing
                 }
               );
             },
           );
   }
-  Widget reCenter() {
-    return
-          GeoData.centerMap // check if the map is centered; i centered no icon
-          ? const Text("Centered",style: TextStyle(color: Colors.blueGrey),)
-          : CircularButton(
-            color: Colors.lightBlue,
-            width: 40,
-            height: 40,
-            icon: const Icon(
-              Icons.center_focus_weak_rounded,
-              color: Colors.white,
-            ),
-            onClick: ()  {
-              setState(() {
-                  GeoData.centerMap=true;
-              });
-              locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom); 
-            },
-          );
-  }
   Widget switchOn() {
-    return switchon // cheeck if the map is refreshing
-        ? SwitchOn( // show refresh icon onclick go refreshing (rotate)
-            value: true, 
-            label: "Track",
+    return switchon // cheeck if on or off
+        ? SwitchOn(value: true, label: "Start",
             onClick: () async {
               setState(() {switchon = false;});
             },
           )
-        : SwitchOn( // show refresh icon onclick go refreshing (rotate)
-            value: false, 
-            label: "Track",
+        : SwitchOn(value: false, label: "End",
             onClick: () async {
               setState(() {switchon = true;});
             },
