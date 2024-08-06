@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:gps001/src/helpers/helpers.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart'; 
 //  -------------------------------------    GeoData (Property of Nirvasoft.com)
 class GeoData{
@@ -8,6 +9,10 @@ class GeoData{
   static double lat=0;
   static double lng=0; 
   static DateTime dtime= DateTime.now();
+  static bool tripStarted=false;
+  static Polyline polyline01 = Polyline(points: [], color: Colors.blue,strokeWidth: 3,
+  );
+
 
   static bool showLatLng=true;
   static bool centerMap=true;
@@ -21,10 +26,19 @@ class GeoData{
 
   static void setLocation(double lat, double lng, DateTime dt){
     if (lat!=0 && lng!=0){
-    GeoData.lat=lat;
-    GeoData.lng=lng;
-    GeoData.dtime=dt;
+      GeoData.lat=lat;
+      GeoData.lng=lng;
+      GeoData.dtime=dt;
+      if (tripStarted){polyline01.points.add(LatLng(lat, lng));}
     }
+  }
+
+  static void startTrip(){
+    polyline01.points.clear();
+    tripStarted=true;
+  }
+  static void endTrip(){
+    tripStarted=false;
   }
   static Future<bool> chkPermissions(Location location) async{
     bool serviceEnabled;

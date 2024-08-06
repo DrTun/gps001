@@ -79,7 +79,7 @@ class SwitchOn extends StatelessWidget {
                 children: [
                    Padding(
                     padding: const EdgeInsets.fromLTRB(6, 6, 6, 4),
-                    child: Text(label,style: TextStyle(color: Colors.black,fontSize: 12, fontWeight: FontWeight.bold,),),
+                    child: Text(label,style: const TextStyle(color: Colors.black,fontSize: 12, fontWeight: FontWeight.bold,),),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8, right: 8, bottom: 10),

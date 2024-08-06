@@ -18,6 +18,7 @@ class Map001 extends StatefulWidget {
 class Map001State extends State<Map001> {
   late LocationNotifier locationNotifierProvider ;
   final List<Marker> markers = [];
+  final List<Polyline> polylines = [];
   //late MapController mapctrl; 
   final  mapctrl = MapController();
   bool refreshing = false; 
@@ -57,7 +58,8 @@ Widget build(BuildContext context) {
                   urlTemplate:"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                   tileProvider: CancellableNetworkTileProvider(),
                 ),
-                MarkerLayer(rotate: true, markers: addMarkers(provider)),  // add markers
+                MarkerLayer(rotate: true, markers: addMarkers(provider)), 
+                PolylineLayer(polylines: addPolylines(provider)),   // add markers
               ],
             ),
             Positioned( // refresh button
@@ -91,6 +93,12 @@ Widget build(BuildContext context) {
         child: Image.asset('assets/images/here.png',scale: 1.0,),
       ));
     return markers;
+  }  
+  List<Polyline> addPolylines(LocationNotifier model) { 
+    polylines.clear();
+    polylines.add( Polyline(points: [LatLng(model.loc01.lat,model.loc01.lng),LatLng(model.loc01.lat+0.0001,model.loc01.lng-0.0001)], strokeWidth: 2.0,color: Colors.red, ));
+    polylines.add(GeoData.polyline01);
+    return polylines;
   }
   Widget reCenter() {
     return 
@@ -123,11 +131,13 @@ Widget build(BuildContext context) {
         ? SwitchOn(value: true, label: "End",
             onClick: () async {
               setState(() {switchon = false;  });
+              GeoData.endTrip();
             },
           )
         : SwitchOn(value: false, label: "Start",
             onClick: () async {
               setState(() {switchon = true;});
+              GeoData.startTrip();
             },
           );
   }
