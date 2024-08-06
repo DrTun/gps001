@@ -72,6 +72,12 @@ Widget build(BuildContext context) {
                   left: 10,
                   bottom: 50,
                   child: reCenter()),
+            Positioned( //  recentre button
+                  left: 10,
+                  bottom: 10,
+                  child: Text("${GeoData.showLatLng?'(${GeoData.counter})':''} ${GeoData.showLatLng?locationNotifierProvider.loc01.lat:''} ${GeoData.showLatLng?locationNotifierProvider.loc01.lat:''} ", style: const TextStyle(fontSize: 14))
+                   
+                  ),
             ],
           ),
         );
@@ -106,6 +112,7 @@ Widget build(BuildContext context) {
               setState(() { refreshing = true;}); // start refreshing
               Timer(const Duration(seconds: 1), () {
                 setState(() { refreshing = false;}); // done refreshing
+                if (GeoData.showLatLng) {GeoData.showLatLng=false; } else {GeoData.showLatLng=true;}
                 }
               );
             },
@@ -115,7 +122,7 @@ Widget build(BuildContext context) {
     return switchon // cheeck if on or off
         ? SwitchOn(value: true, label: "End",
             onClick: () async {
-              setState(() {switchon = false;});
+              setState(() {switchon = false;  });
             },
           )
         : SwitchOn(value: false, label: "Start",
