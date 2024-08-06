@@ -1,25 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_math/flutter_geo_math.dart';
 import 'package:gps001/src/helpers/helpers.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart'; 
 //  -------------------------------------    GeoData (Property of Nirvasoft.com)
 class GeoData{
   static int counter=0;
-  static double lat=0;
-  static double lng=0; 
-  static DateTime dtime= DateTime.now();
+  static double currentLat=0;
+  static double currentLng=0; 
+  static DateTime currentDtime= DateTime.now();
   static bool tripStarted=false;
-  static Polyline polyline01 = Polyline(points: [], color: Colors.blue,strokeWidth: 3,
-  );
+  static Polyline polyline01 = Polyline(points: [], color: Colors.red,strokeWidth: origThickenss,);
+  static List<DateTime> dtimeList01=[];
 
+  static Polyline polyline01Fixed = Polyline(points: [], color: Colors.blue,strokeWidth: optiThickenss,);
+  static List<DateTime> dtimeList01Fixed=[];
 
+  // App Parameters
   static bool showLatLng=true;
   static bool centerMap=true;
   static bool listenChanges=true;
   static double zoom=16;
   static int interval=1000;
   static double distance=0;
+  static double minDistance=5;
+  static double maxDistance=30;
+  static double origThickenss=3;
+  static double optiThickenss=10;
 
   static const double defaultLat=1.2926;
   static const double defaultLng=103.8448;
@@ -27,10 +35,37 @@ class GeoData{
   static void setLocation(double lat, double lng, DateTime dt){
     if (lat!=0 && lng!=0){
         GeoData.counter++;
-        GeoData.lat=lat;
-        GeoData.lng=lng;
-        GeoData.dtime=dt;
-        if (tripStarted){polyline01.points.add(LatLng(lat, lng));}
+        GeoData.currentLat=lat;
+        GeoData.currentLng=lng;
+        GeoData.currentDtime=dt;
+        if (tripStarted){
+          polyline01.points.add(LatLng(lat, lng));
+          dtimeList01.add(dt);
+
+          polyline01Fixed.points.add(LatLng(lat, lng - 0.000003));
+          dtimeList01Fixed.add(dt);
+
+          if (polyline01Fixed.points.length>=3){
+            FlutterMapMath fmm = FlutterMapMath();
+            double dist2=fmm.distanceBetween(
+                polyline01Fixed.points[polyline01Fixed.points.length-2].latitude, 
+                polyline01Fixed.points[polyline01Fixed.points.length-2].longitude, 
+                polyline01Fixed.points[polyline01Fixed.points.length-1].latitude,
+                polyline01Fixed.points[polyline01Fixed.points.length-1].longitude,"meters");
+            double dist1=fmm.distanceBetween(
+                polyline01Fixed.points[polyline01Fixed.points.length-2].latitude, 
+                polyline01Fixed.points[polyline01Fixed.points.length-2].longitude, 
+                polyline01Fixed.points[polyline01Fixed.points.length-3].latitude,
+                polyline01Fixed.points[polyline01Fixed.points.length-3].longitude,"meters");
+            if ((dist1<minDistance || dist1>maxDistance) && (dist2<minDistance || dist2>maxDistance)){
+              polyline01Fixed.points.removeAt(polyline01Fixed.points.length-2);
+              dtimeList01Fixed.removeAt(dtimeList01Fixed.length-2);
+              logger.i("Removed: $dist1 $dist2 ");
+            } else {
+              logger.i("Kept: $dist1 $dist2 ");
+            }
+          }
+        }
     }
   }
 

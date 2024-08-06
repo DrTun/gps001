@@ -96,7 +96,7 @@ Widget build(BuildContext context) {
   }  
   List<Polyline> addPolylines(LocationNotifier model) { 
     polylines.clear();
-    //polylines.add( Polyline(points: [LatLng(model.loc01.lat,model.loc01.lng),LatLng(model.loc01.lat+0.0001,model.loc01.lng-0.0001)], strokeWidth: 2.0,color: Colors.red, ));
+    polylines.add(GeoData.polyline01Fixed);
     polylines.add(GeoData.polyline01);
     return polylines;
   }

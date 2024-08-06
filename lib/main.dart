@@ -72,7 +72,6 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
     try {
       locationNotifierProvider = Provider.of<LocationNotifier>(context,listen: false);
       if (await GeoData.chkPermissions(location)){
-        //location.enableBackgroundMode(enable: true);
         await location.changeSettings(accuracy: LocationAccuracy.high, interval: GeoData.interval, distanceFilter: GeoData.distance);
         locationSubscription = location.onLocationChanged.listen((LocationData currentLocation) {changeLocations(currentLocation);});
         if (GeoData.listenChanges==false) locationSubscription.pause();
@@ -86,10 +85,10 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
       
       GeoData.setLocation(currentLocation.latitude!, currentLocation.longitude!, DateTime.now());  
       setState(() {
-        locationNotifierProvider.updateLoc1(currentLocation.latitude!,  currentLocation.longitude!, GeoData.dtime); 
+        locationNotifierProvider.updateLoc1(currentLocation.latitude!,  currentLocation.longitude!, GeoData.currentDtime); 
       });
       if (GeoData.centerMap){locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom);}
-      if (GeoData.showLatLng){logger.i("(${GeoData.counter}) ${currentLocation.latitude} x ${currentLocation.longitude}");}
+      //if (GeoData.showLatLng){logger.i("(${GeoData.counter}) ${currentLocation.latitude} x ${currentLocation.longitude}");}
     } catch (e) {
       logger.i("Exception (changeLocations): $e");
     }
@@ -98,7 +97,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
     try {
       var locationData = await GeoData.getCurrentLocation(location); 
       if (locationData != null) {
-        locationNotifierProvider.updateLoc1(GeoData.lat, GeoData.lng, GeoData.dtime); 
+        locationNotifierProvider.updateLoc1(GeoData.currentLat, GeoData.currentLng, GeoData.currentDtime); 
         locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom); 
         MyHelpers.showIt("\n${locationNotifierProvider.loc01.lat}\n${locationNotifierProvider.loc01.lng}",label: "You are here",sec: 4,bcolor: Colors.orange);
       } else { logger.i("Invalid Location!"); }    
