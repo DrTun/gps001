@@ -131,12 +131,16 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
                   } else if (value =="MOVE-HERE"){ moveHere(); 
                   } else if (value =="ASKMIN"){ _minDistance(context); 
                   } else if (value =="ASKMAX"){ _maxDistance(context); 
+                  } else if (value =="ASKDIS"){ _getDistance(context); 
+                  } else if (value =="ASKINT"){ _getInterval(context); 
                   }
                 },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                   PopupMenuItem<String>( value: 'GPS-START-STOP',  child: Text(lblLocationChanges),),
                   const PopupMenuItem<String>( value: 'MOVE-HERE',  child: Text('Show current location'),),
                   const PopupMenuDivider(),
+                  const PopupMenuItem<String>( value: 'ASKINT',  child: Text('Interval'),),
+                  const PopupMenuItem<String>( value: 'ASKDIS',  child: Text('Distance'),),
                   const PopupMenuItem<String>( value: 'ASKMIN',  child: Text('Minimum Distance'),),
                   const PopupMenuItem<String>( value: 'ASKMAX',  child: Text('Maximum Distance'),),
                 ],
@@ -179,5 +183,35 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
       if (parsedResult != null) {setState(() {GeoData.maxDistance = parsedResult;});}
     }
   }
-
+  Future<void> _getDistance(BuildContext context) async {
+    String? result =  await prompt(
+              context,title: const Text('Distance?'),
+              initialValue: GeoData.distance.toString(),
+              textOK: const Text('OK'), textCancel: const Text('Cancel'),
+            );
+    if (result != null) {
+      double? parsedResult = double.tryParse(result);
+      if (parsedResult != null) {
+        setState(() {
+          GeoData.distance = parsedResult;
+          location.changeSettings(accuracy: LocationAccuracy.high, interval: GeoData.interval, distanceFilter: GeoData.distance);
+      });}
+    }
+  }
+  Future<void> _getInterval(BuildContext context) async {
+    String? result =  await prompt(
+              context,title: const Text('Interval?'),
+              initialValue: GeoData.interval.toString(),
+              textOK: const Text('OK'), textCancel: const Text('Cancel'),
+            );
+    if (result != null) {
+      int? parsedResult = int.tryParse(result);
+      if (parsedResult != null) {
+        setState(() {
+          GeoData.interval = parsedResult;
+          location.changeSettings(accuracy: LocationAccuracy.high, interval: GeoData.interval, distanceFilter: GeoData.distance);
+        });
+      }
+    }
+  }
 }

@@ -123,8 +123,6 @@ class LocationNotifier extends ChangeNotifier {
   LocationNotifier() { 
     _loc01 = Loc01(0, 0,  DateTime(2000));
   }
-
-
   late Loc01 _loc01;
   Loc01 get loc01 => _loc01;
   final MapController _mapController = MapController();
