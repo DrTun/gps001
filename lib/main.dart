@@ -83,10 +83,10 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
   }
   void changeLocations(LocationData currentLocation){ //listen to location changes
     try {
-      GeoData.counter++;
-      GeoData.setLocation(currentLocation.latitude!, currentLocation.longitude!, DateTime.now());
+      
+      GeoData.setLocation(currentLocation.latitude!, currentLocation.longitude!, DateTime.now());  
       setState(() {
-        locationNotifierProvider.updateLoc1(GeoData.lat, GeoData.lng, GeoData.dtime); 
+        locationNotifierProvider.updateLoc1(currentLocation.latitude!,  currentLocation.longitude!, GeoData.dtime); 
       });
       if (GeoData.centerMap){locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom);}
       if (GeoData.showLatLng){logger.i("(${GeoData.counter}) ${currentLocation.latitude} x ${currentLocation.longitude}");}
@@ -119,14 +119,14 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
                     if(GeoData.listenChanges) {
                       GeoData.listenChanges=false;
                       GeoData.counter=0;
-                      locationSubscription.resume(); 
-                      setState(() {lblLocationChanges="Pause Location Service";});
+                      locationSubscription.pause(); 
+                      setState(() {lblLocationChanges="Resume Location Service";});
                     } else {
                       GeoData.listenChanges=true;
                       GeoData.centerMap=true;
-                      GeoData.counter=0;
-                      locationSubscription.pause(); 
-                      setState(() {lblLocationChanges="Resume Location Service";});
+                      GeoData.counter=1;
+                      locationSubscription.resume(); 
+                      setState(() {lblLocationChanges="Pause Location Service";});
                     }
                   } else if (value =="MOVE-HERE"){ moveHere(); } 
                 },

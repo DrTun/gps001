@@ -18,20 +18,22 @@ class GeoData{
   static bool centerMap=true;
   static bool listenChanges=true;
   static double zoom=16;
-  static int interval=2000;
+  static int interval=1000;
   static double distance=0;
 
-  static const double defaultLat=1.3521;
-  static const double defaultLng=103.8198;
+  static const double defaultLat=1.2926;
+  static const double defaultLng=103.8448;
 
   static void setLocation(double lat, double lng, DateTime dt){
     if (lat!=0 && lng!=0){
-      GeoData.lat=lat;
-      GeoData.lng=lng;
-      GeoData.dtime=dt;
-      if (tripStarted){polyline01.points.add(LatLng(lat, lng));}
+        GeoData.counter++;
+        GeoData.lat=lat;
+        GeoData.lng=lng;
+        GeoData.dtime=dt;
+        if (tripStarted){polyline01.points.add(LatLng(lat, lng));}
     }
   }
+
 
   static void startTrip(){
     polyline01.points.clear();
@@ -94,12 +96,12 @@ class LocationNotifier extends ChangeNotifier {
   final MapController _mapController = MapController();
   MapController get mapController => _mapController;
   
-  void updateLoc1(double lon, double lat, DateTime dt){
-    _loc01 = Loc01(lon, lat, dt);
+  void updateLoc1(double lat, double lng, DateTime dt){
+    _loc01 = Loc01(lat, lng, dt);
     notifyListeners();
   }
 }
-class Loc01 {
+class Loc01 { 
   final double  lat;
   final double lng; 
   final DateTime dt;
