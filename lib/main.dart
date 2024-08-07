@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:logger/web.dart';
-import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:provider/provider.dart';
 
 import 'src/helpers/helpers.dart';
@@ -162,57 +161,40 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
   }
 
 
-  Future<void> _minDistance(BuildContext context) async {
-    String? result =  await prompt(
-              context,title: const Text('Minimum Distance?'),
-              initialValue: GeoData.minDistance.toString(),
-              textOK: const Text('OK'), textCancel: const Text('Cancel'),
-            );
-    if (result != null) {
-      double? parsedResult = double.tryParse(result);
-      if (parsedResult != null) {setState(() {GeoData.minDistance = parsedResult;});}
-    }
-  }
+
   Future<void> _maxDistance(BuildContext context) async {
-    String? result =  await prompt(
-              context,title: const Text('Maximum Distance?'),
-              initialValue: GeoData.maxDistance.toString(),
-              textOK: const Text('OK'), textCancel: const Text('Cancel'),
-            );
-    if (result != null) {
-      double? parsedResult = double.tryParse(result);
-      if (parsedResult != null) {setState(() {GeoData.maxDistance = parsedResult;});}
-    }
+    double? parsedResult =  await MyHelpers.getDouble(context, GeoData.maxDistance,"Maximum Distance");
+      if (parsedResult != null) {
+        setState(() {
+          GeoData.maxDistance = parsedResult; 
+        });
+      }
+  }
+  Future<void> _minDistance(BuildContext context) async {
+    double? parsedResult =  await MyHelpers.getDouble(context, GeoData.minDistance,"Minimum Distance");
+      if (parsedResult != null) {
+        setState(() {
+          GeoData.minDistance = parsedResult; 
+        });
+      }
   }
   Future<void> _getDistance(BuildContext context) async {
-    String? result =  await prompt(
-              context,title: const Text('Distance?'),
-              initialValue: GeoData.distance.toString(),
-              textOK: const Text('OK'), textCancel: const Text('Cancel'),
-            );
-    if (result != null) {
-      double? parsedResult = double.tryParse(result);
+    double? parsedResult =  await MyHelpers.getDouble(context, GeoData.distance,"Distance");
       if (parsedResult != null) {
         setState(() {
           GeoData.distance = parsedResult;
           location.changeSettings(accuracy: LocationAccuracy.high, interval: GeoData.interval, distanceFilter: GeoData.distance);
-      });}
-    }
+        });
+      }
   }
   Future<void> _getInterval(BuildContext context) async {
-    String? result =  await prompt(
-              context,title: const Text('Interval?'),
-              initialValue: GeoData.interval.toString(),
-              textOK: const Text('OK'), textCancel: const Text('Cancel'),
-            );
-    if (result != null) {
-      int? parsedResult = int.tryParse(result);
+    int? parsedResult =  await MyHelpers.getInt(context, GeoData.interval,"Interval");
       if (parsedResult != null) {
         setState(() {
           GeoData.interval = parsedResult;
           location.changeSettings(accuracy: LocationAccuracy.high, interval: GeoData.interval, distanceFilter: GeoData.distance);
         });
       }
-    }
   }
+
 }
