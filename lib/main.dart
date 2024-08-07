@@ -84,10 +84,10 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
   }
   void changeLocations(LocationData currentLocation){ //listen to location changes
     try {
-      
-      GeoData.setLocation(currentLocation.latitude!, currentLocation.longitude!, DateTime.now());  
+      DateTime dt = DateTime.now();
+      GeoData.updateLocation(currentLocation.latitude!, currentLocation.longitude!, dt);  
       setState(() {
-        locationNotifierProvider.updateLoc1(currentLocation.latitude!,  currentLocation.longitude!, GeoData.currentDtime); 
+        locationNotifierProvider.updateLoc1(currentLocation.latitude!,  currentLocation.longitude!, dt); 
       });
       if (GeoData.centerMap){locationNotifierProvider.mapController.move(LatLng(locationNotifierProvider.loc01.lat, locationNotifierProvider.loc01.lng),GeoData.zoom);}
       //if (GeoData.showLatLng){logger.i("(${GeoData.counter}) ${currentLocation.latitude} x ${currentLocation.longitude}");}

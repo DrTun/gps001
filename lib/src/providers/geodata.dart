@@ -32,7 +32,7 @@ class GeoData{
   static const double defaultLat=1.2926;
   static const double defaultLng=103.8448;
 
-  static void setLocation(double lat, double lng, DateTime dt){
+  static void updateLocation(double lat, double lng, DateTime dt){
     if (lat!=0 && lng!=0){
         GeoData.counter++;
         GeoData.currentLat=lat;
@@ -112,7 +112,7 @@ class GeoData{
       bool serviceEnabled=await chkPermissions(location);
       if (serviceEnabled) {
         locationData = await location.getLocation();
-        GeoData.setLocation(locationData.latitude!, locationData.longitude!, DateTime.now());
+        GeoData.updateLocation(locationData.latitude!, locationData.longitude!, DateTime.now());
         return locationData;
       } else {
         return null;
