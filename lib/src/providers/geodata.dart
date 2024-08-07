@@ -28,7 +28,7 @@ class GeoData{
   static double minDistance=30;
   static double maxDistance=100;
   static double origThickenss=3;
-  static double optiThickenss=10;
+  static double optiThickenss=6;
   static const double defaultLat=1.2926;
   static const double defaultLng=103.8448;
 

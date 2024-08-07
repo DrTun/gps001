@@ -58,8 +58,8 @@ Widget build(BuildContext context) {
                   urlTemplate:"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                   tileProvider: CancellableNetworkTileProvider(),
                 ),
-                MarkerLayer(rotate: true, markers: addMarkers(provider)), 
                 PolylineLayer(polylines: addPolylines(provider)),   // add markers
+                MarkerLayer(rotate: true, markers: addMarkers(provider)), 
               ],
             ),
             Positioned( // refresh button
@@ -88,16 +88,28 @@ Widget build(BuildContext context) {
 
   List<Marker> addMarkers(LocationNotifier model) { 
       markers.clear();
+      if (GeoData.polyline01Fixed.points.isNotEmpty){
+        markers.add(Marker(
+          point: LatLng(GeoData.polyline01Fixed.points[0].latitude, GeoData.polyline01Fixed.points[0].longitude), width: 100,height: 100,alignment: Alignment.center,
+          child: Image.asset('assets/images/geo/start-blue.png',scale: 1.0,),
+          ));
+         if (!GeoData.tripStarted) {
+           markers.add(Marker(
+           point: LatLng(GeoData.polyline01Fixed.points[GeoData.polyline01Fixed.points.length-1].latitude, GeoData.polyline01Fixed.points[GeoData.polyline01Fixed.points.length-1].longitude), width: 100,height: 100,alignment: Alignment.center,
+           child: Image.asset('assets/images/geo/end-red.png',scale: 1.0,),
+           ));
+         }
+      }
       markers.add(Marker(
         point: LatLng(model.loc01.lat, model.loc01.lng), width: 100,height: 100,alignment: Alignment.center,
-        child: Image.asset('assets/images/here.png',scale: 1.0,),
+        child: GeoData.tripStarted? Image.asset('assets/images/geo/move-green.png',scale: 0.1,):Image.asset('assets/images/geo/here-red.png',scale: 1.0,),
       ));
     return markers;
   }  
   List<Polyline> addPolylines(LocationNotifier model) { 
     polylines.clear();
     polylines.add(GeoData.polyline01Fixed);
-    polylines.add(GeoData.polyline01);
+    if (GeoData.showLatLng) polylines.add(GeoData.polyline01);
     return polylines;
   }
   Widget reCenter() {
