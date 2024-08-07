@@ -18,7 +18,8 @@ class GeoData{
   static List<DateTime> dtimeList01Fixed=[];
 
   // App Parameters
-  static bool showLatLng=true;
+  static String version="1.0.0";
+  static bool showLatLng=false;
   static bool centerMap=true;
   static bool listenChanges=true;
   static double zoom=16;

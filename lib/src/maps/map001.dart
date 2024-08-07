@@ -77,7 +77,7 @@ Widget build(BuildContext context) {
             Positioned( //  recentre button
                   left: 10,
                   bottom: 10,
-                  child: Text("${GeoData.showLatLng?'(${GeoData.counter})':''} ${GeoData.showLatLng?locationNotifierProvider.loc01.lat:''} ${GeoData.showLatLng?locationNotifierProvider.loc01.lng:''} ", style: const TextStyle(fontSize: 12,color: Colors.red))
+                  child: Text("${GeoData.showLatLng?'(${GeoData.counter})':''} ${GeoData.showLatLng?locationNotifierProvider.loc01.lat:''} ${GeoData.showLatLng?locationNotifierProvider.loc01.lng:''} v${GeoData.version} ", style: const TextStyle(fontSize: 12,color: Colors.red))
                    
                   ),
             ],
