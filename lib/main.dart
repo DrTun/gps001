@@ -4,8 +4,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:logger/web.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
-
 import 'package:provider/provider.dart';
+
 import 'src/helpers/helpers.dart';
 import 'src/maps/map001.dart';
 import 'src/providers/geodata.dart';
