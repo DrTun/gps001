@@ -45,7 +45,7 @@ class GeoData{
           polyline01Fixed.points.add(LatLng(lat, lng - 0.000003));
           dtimeList01Fixed.add(dt);
 
-          if (polyline01Fixed.points.length>=3){
+          if (polyline01Fixed.points.length>=3){  // Remove if distance is too short or too long
             FlutterMapMath fmm = FlutterMapMath();
             double dist2=fmm.distanceBetween(
                 polyline01Fixed.points[polyline01Fixed.points.length-2].latitude, 
