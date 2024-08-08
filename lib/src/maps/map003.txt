@@ -1,21 +1,27 @@
-import 'dart:async'; 
+import 'dart:async';
+import 'dart:io'; 
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:dio_cache_interceptor_file_store/dio_cache_interceptor_file_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_cache/flutter_map_cache.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:gps001/src/widgets/debugcircle.dart';
 import 'package:gps001/src/widgets/recenter.dart'; 
 import 'package:gps001/src/widgets/switchon.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import '../providers/geodata.dart';
 //  -------------------------------------    Map001 (Property of Nirvasoft.com)
-class Map001 extends StatefulWidget {
-  const Map001({super.key});
+// https://pub.dev/packages/flutter_map_cache
+class Map003 extends StatefulWidget {
+  const Map003({super.key});
 
   @override
   Map001State createState() => Map001State();
 }
-class Map001State extends State<Map001> {
+class Map001State extends State<Map003> {
   late LocationNotifier locationNotifierProvider ;
   final List<Marker> markers = [];
   final List<Polyline> polylines = [];
@@ -25,6 +31,19 @@ class Map001State extends State<Map001> {
   bool switchon = false;
   final ValueNotifier<bool> isStartValue = ValueNotifier<bool>(false);
 
+
+ final Future<CacheStore> _cacheStoreFuture = _getCacheStore();
+
+  /// Get the CacheStore as a Future. This method needs to be static so that it
+  /// can be used to initialize a field variable.
+  static Future<CacheStore> _getCacheStore() async {
+    final dir = await getTemporaryDirectory();
+    // Note, that Platform.pathSeparator from dart:io does not work on web,
+    // import it from dart:html instead.
+    return FileCacheStore('${dir.path}${Platform.pathSeparator}MapTiles');
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -32,19 +51,33 @@ class Map001State extends State<Map001> {
     locationNotifierProvider = Provider.of<LocationNotifier>(context,listen: false);
     });
   }
-@override
-Widget build(BuildContext context) {
+
+  @override
+  Widget build(BuildContext context) {
+    // show a loading screen when _cacheStore hasn't been set yet
+
+
     return Consumer<LocationNotifier>(
       builder: (context, provider , child) {
       double lat =GeoData.currentLat; 
       double lng =GeoData.currentLng;
-      return Scaffold(
+
+
+
+    return FutureBuilder<CacheStore>(
+      future: _cacheStoreFuture,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final cacheStore = snapshot.data!;
+
+
+
+        return Scaffold(
           body: Stack(
             children: [ 
-            FlutterMap(
-              mapController: provider.mapController,
-              options:   MapOptions(
-                initialCenter: LatLng(lat, lng), 
+          FlutterMap(
+            options: MapOptions(
+                initialCenter: LatLng(lat, lng),  
                 initialZoom: GeoData.zoom,
                 onPositionChanged: (position, hasGesture) {
                   GeoData.zoom=position.zoom;
@@ -52,16 +85,19 @@ Widget build(BuildContext context) {
                     setState(() {GeoData.centerMap=false;});
                   }
                 },
-              ),
-              children: [
-                TileLayer(
-                  urlTemplate:"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                  tileProvider: CancellableNetworkTileProvider(),
+            ),
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                tileProvider: CachedTileProvider( 
+                  store: cacheStore,
                 ),
+              ),
                 PolylineLayer(polylines: addPolylines(provider)),   // add markers
                 MarkerLayer(rotate: true, markers: addMarkers(provider)), 
-              ],
-            ),
+            ],
+          ),
+          
             Positioned( // refresh button
                   right: 10,
                   top: 0,
@@ -79,12 +115,31 @@ Widget build(BuildContext context) {
                   bottom: 10,
                   child: Text("${GeoData.showLatLng?'(${GeoData.counter})':''} ${GeoData.showLatLng?locationNotifierProvider.loc01.lat:''} ${GeoData.showLatLng?locationNotifierProvider.loc01.lng:''} v${GeoData.version} ", style: const TextStyle(fontSize: 12,color: Colors.red))
                    
-                  ),
-            ],
-          ),
-        );
-  });
-}
+                  ), 
+            ]
+            )
+          );
+
+
+          
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text(snapshot.error.toString()));
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+      ); 
+
+
+
+
+      }
+      );
+    
+
+  }
+
+
 
   List<Marker> addMarkers(LocationNotifier model) { 
       markers.clear();
