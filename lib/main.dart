@@ -70,6 +70,8 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
     }
   }
   Future<void> initGeoData() async {
+    GeoData.currentLat = GeoData.defaultLat;
+    GeoData.currentLng = GeoData.defaultLng;
     try {
       locationNotifierProvider = Provider.of<LocationNotifier>(context,listen: false);
       if (await GeoData.chkPermissions(location)){
@@ -159,9 +161,6 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> with WidgetsBindingO
       ),
     );
   }
-
-
-
   Future<void> _maxDistance(BuildContext context) async {
     double? parsedResult =  await MyHelpers.getDouble(context, GeoData.maxDistance,"Maximum Distance");
       if (parsedResult != null) {

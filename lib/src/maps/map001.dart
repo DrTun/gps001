@@ -36,15 +36,15 @@ class Map001State extends State<Map001> {
 Widget build(BuildContext context) {
     return Consumer<LocationNotifier>(
       builder: (context, provider , child) {
-      const double lat =GeoData.defaultLat; 
-      const double lng =GeoData.defaultLng;
+      double lat =GeoData.currentLat; 
+      double lng =GeoData.currentLng;
       return Scaffold(
           body: Stack(
             children: [ 
             FlutterMap(
               mapController: provider.mapController,
               options:   MapOptions(
-                initialCenter: const LatLng(lat, lng), //london
+                initialCenter: LatLng(lat, lng), //london
                 initialZoom: GeoData.zoom,
                 onPositionChanged: (position, hasGesture) {
                   GeoData.zoom=position.zoom;
