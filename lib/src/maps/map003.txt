@@ -1,3 +1,11 @@
+//  # map cache
+//  #flutter_map_cache: ^1.5.1
+//  #path_provider: ^2.1.4
+//  #dio_cache_interceptor_file_store: ^1.2.3
+//  #dio_cache_interceptor: ^3.5.0
+//  # map cache
+
+
 import 'dart:async';
 import 'dart:io'; 
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
